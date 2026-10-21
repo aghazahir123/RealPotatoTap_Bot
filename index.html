@@ -3,148 +3,261 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Potato Tap 3D</title>
+    <title>Potato Clicker - Ultimate Mini App</title>
+    <!-- Tailwind CSS & Icons -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <!-- Telegram WebApp SDK -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <style>
-        body { user-select: none; -webkit-user-select: none; touch-action: manipulation; }
-        .tap-btn:active { transform: scale(0.92); }
-        @keyframes floatUp { 0% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-70px); } }
-        .floating-num { position: absolute; pointer-events: none; font-weight: 800; font-size: 1.5rem; color: #00F0FF; animation: floatUp 0.6s ease-out forwards; z-index: 50; }
-    </style>
-</head>
-<body class="bg-slate-900 text-white min-h-screen flex flex-col justify-between p-4 max-w-md mx-auto relative overflow-hidden">
-    
-    <!-- Top Bar -->
-    <div class="flex items-center justify-between border-b border-slate-800 pb-3">
-        <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-xl bg-cyan-500/20 border border-cyan-400 flex items-center justify-center font-bold text-cyan-400" id="user-avatar">
-                🥔
-            </div>
-            <div>
-                <h3 class="font-bold text-sm" id="user-name">Player</h3>
-                <span class="text-xs text-yellow-400 font-semibold">Bronze Tapper</span>
-            </div>
-        </div>
-        <button onclick="toggleAdmin()" class="px-3 py-1.5 rounded-xl bg-purple-600/30 border border-purple-500 text-purple-300 text-xs font-bold">
-            Admin Panel
-        </button>
-    </div>
-
-    <!-- Main Game View -->
-    <div id="game-view" class="flex flex-col items-center justify-center my-auto space-y-6">
-        <div class="text-center">
-            <span class="text-xs uppercase text-slate-400 tracking-wider">Total Coins</span>
-            <div class="text-4xl font-extrabold text-cyan-400 mt-1">
-                ⚡ <span id="score">0</span>
-            </div>
-        </div>
-
-        <!-- Tap Potato Button -->
-        <button id="tap-btn" class="tap-btn relative w-56 h-56 rounded-full bg-gradient-to-tr from-purple-600 via-slate-800 to-cyan-500 p-2 shadow-2xl border-4 border-cyan-400/40 outline-none transition">
-            <div class="w-full h-full rounded-full bg-slate-800 flex flex-col items-center justify-center border-2 border-slate-700 shadow-inner">
-                <span class="text-7xl">🥔</span>
-                <span class="mt-2 text-xs font-black text-cyan-400 tracking-widest uppercase">TAP TO EARN</span>
-            </div>
-        </button>
-
-        <!-- Energy Bar -->
-        <div class="w-full space-y-1">
-            <div class="flex justify-between text-xs font-bold">
-                <span class="text-yellow-400">⚡ <span id="energy-text">1000 / 1000</span></span>
-                <span class="text-slate-400">+1 per sec</span>
-            </div>
-            <div class="w-full bg-slate-800 h-3 rounded-full overflow-hidden p-[2px] border border-slate-700">
-                <div id="energy-bar" class="bg-gradient-to-r from-yellow-500 to-amber-300 h-full rounded-full transition-all duration-150" style="width: 100%"></div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Admin View (Hidden by Default) -->
-    <div id="admin-view" class="hidden my-auto space-y-4">
-        <h2 class="text-xl font-bold text-cyan-400 border-b border-slate-800 pb-2">Admin Dashboard</h2>
-        <div class="bg-slate-800 p-4 rounded-xl space-y-3 border border-slate-700">
-            <div>
-                <label class="text-xs text-slate-400">Coins Per Tap</label>
-                <input type="number" id="adm-pertap" value="1" class="w-full mt-1 bg-slate-900 border border-slate-700 rounded-lg p-2 text-xs">
-            </div>
-            <div>
-                <label class="text-xs text-slate-400">Add Bonus Coins to Balance</label>
-                <input type="number" id="adm-addcoins" placeholder="e.g. 5000" class="w-full mt-1 bg-slate-900 border border-slate-700 rounded-lg p-2 text-xs">
-            </div>
-            <button onclick="saveAdmin()" class="w-full py-2 bg-cyan-500 text-slate-900 font-extrabold text-xs rounded-lg">SAVE CHANGES</button>
-        </div>
-    </div>
-
+    <!-- TON Connect SDK for Real Web3 Wallet -->
+    <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
     <script>
-        let tg = window.Telegram ? window.Telegram.WebApp : null;
-        if (tg) { tg.expand(); tg.ready(); }
-
-        let coins = 0;
-        let energy = 1000;
-        let maxEnergy = 1000;
-        let perTap = 1;
-
-        // Set User Info
-        if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) {
-            document.getElementById('user-name').innerText = tg.initDataUnsafe.user.first_name;
-        }
-
-        const tapBtn = document.getElementById('tap-btn');
-
-        function handleTap(e) {
-            if (energy < perTap) return;
-            
-            energy -= perTap;
-            coins += perTap;
-            
-            updateUI();
-
-            // Floating +1 Animation
-            let x = e.clientX || (e.touches && e.touches[0] ? e.touches[0].clientX : window.innerWidth / 2);
-            let y = e.clientY || (e.touches && e.touches[0] ? e.touches[0].clientY : window.innerHeight / 2);
-            
-            let num = document.createElement('div');
-            num.className = 'floating-num';
-            num.innerText = '+' + perTap;
-            num.style.left = (x - 10) + 'px';
-            num.style.top = (y - 20) + 'px';
-            document.body.appendChild(num);
-            setTimeout(() => num.remove(), 600);
-        }
-
-        tapBtn.addEventListener('click', handleTap);
-
-        function updateUI() {
-            document.getElementById('score').innerText = coins;
-            document.getElementById('energy-text').innerText = energy + ' / ' + maxEnergy;
-            document.getElementById('energy-bar').style.width = ((energy / maxEnergy) * 100) + '%';
-        }
-
-        // Energy Regen
-        setInterval(() => {
-            if (energy < maxEnergy) {
-                energy = Math.min(maxEnergy, energy + 1);
-                updateUI();
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        cyber: {
+                            bg: '#0A0E17', card: '#141B2D', border: '#232E4A',
+                            gold: '#FFC700', neon: '#00F0FF', purple: '#8A2BE2',
+                            red: '#FF2A6D', green: '#05FF00'
+                        }
+                    },
+                    fontFamily: { sans: ['Outfit', 'sans-serif'] }
+                }
             }
-        }, 1000);
-
-        function toggleAdmin() {
-            let g = document.getElementById('game-view');
-            let a = document.getElementById('admin-view');
-            g.classList.toggle('hidden');
-            a.classList.toggle('hidden');
-        }
-
-        function saveAdmin() {
-            let pt = parseInt(document.getElementById('adm-pertap').value);
-            let ac = parseInt(document.getElementById('adm-addcoins').value);
-            if (pt > 0) perTap = pt;
-            if (ac > 0) coins += ac;
-            updateUI();
-            toggleAdmin();
         }
     </script>
-</body>
-</html>
+    <style>
+        body { font-family: 'Outfit', sans-serif; user-select: none; -webkit-user-select: none; touch-action: manipulation; background-color: #0A0E17; color: #FFFFFF; overflow-x: hidden; }
+        @keyframes floatUp { 0% { opacity: 1; transform: translateY(0) scale(1); } 100% { opacity: 0; transform: translateY(-90px) scale(1.2); } }
+        .floating-num { position: absolute; pointer-events: none; font-weight: 900; font-size: 1.8rem; color: #FFC700; text-shadow: 0 0 12px rgba(255, 199, 0, 0.8); animation: floatUp 0.7s ease-out forwards; z-index: 50; }
+        .potato-glow { filter: drop-shadow(0 0 25px rgba(255, 199, 0, 0.35)); transition: transform 0.08s ease; }
+        .potato-glow:active { transform: scale(0.90); }
+        ::-webkit-scrollbar { width: 3px; } ::-webkit-scrollbar-track { background: #0A0E17; } ::-webkit-scrollbar-thumb { background: #232E4A; border-radius: 4px; }
+        #drop-canvas { touch-action: none; }
+    </style>
+</head>
+<body class="flex flex-col h-screen max-w-md mx-auto relative border-x border-cyber-border/40">
+
+    <!-- Top Header Profile -->
+    <header class="p-3.5 flex items-center justify-between border-b border-cyber-border bg-cyber-bg/95 backdrop-blur sticky top-0 z-40">
+        <div class="flex items-center gap-2.5">
+            <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-cyber-purple to-cyber-gold p-[2px]">
+                <div class="w-full h-full bg-cyber-bg rounded-[14px] flex items-center justify-center overflow-hidden">
+                    <span id="user-avatar" class="text-xl">🥔</span>
+                </div>
+            </div>
+            <div>
+                <h3 class="font-extrabold text-sm leading-tight flex items-center gap-1" id="user-name">Loading...</h3>
+                <span class="text-[11px] text-cyber-gold font-bold flex items-center gap-1">
+                    <i class="fa-solid fa-crown text-[10px]"></i> <span id="user-level-name">Bronze Tapper</span>
+                </span>
+            </div>
+        </div>
+        <div class="flex items-center gap-2">
+            <button onclick="toggleAdminPanel()" class="px-3 py-1.5 rounded-xl bg-cyber-purple/30 border border-cyber-purple text-cyber-neon text-xs font-bold hover:bg-cyber-purple/50 transition flex items-center gap-1">
+                <i class="fa-solid fa-user-shield"></i> <span id="admin-btn-text">Admin</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main App Content -->
+    <main class="flex-1 overflow-y-auto p-4 pb-24 relative" id="app-viewport">
+        
+        <!-- User App Tabs -->
+        <div id="user-views" class="space-y-4">
+            
+            <!-- Tab 1: Hamster Style Tap Game -->
+            <div id="tab-tap" class="tab-content flex flex-col items-center justify-between min-h-[460px] py-1">
+                <div class="text-center my-1">
+                    <span class="text-[11px] uppercase tracking-widest text-gray-400 font-extrabold">Total Balance</span>
+                    <div class="flex items-center justify-center gap-2 mt-1">
+                        <span class="text-3xl">🥔</span>
+                        <h1 class="text-4xl font-black text-white tracking-tight" id="balance-num">0</h1>
+                    </div>
+                </div>
+
+                <!-- Level Progress Bar -->
+                <div class="w-full bg-cyber-card p-3 rounded-2xl border border-cyber-border">
+                    <div class="flex justify-between text-xs mb-1 font-bold">
+                        <span class="text-gray-400" id="level-title">Level 1/5</span>
+                        <span class="text-cyber-gold" id="level-progress-text">0 / 5,000</span>
+                    </div>
+                    <div class="w-full bg-slate-900 h-2.5 rounded-full overflow-hidden border border-cyber-border/50 p-[1px]">
+                        <div id="level-bar" class="bg-gradient-to-r from-cyber-purple via-cyber-neon to-cyber-gold h-full rounded-full transition-all duration-300" style="width: 0%"></div>
+                    </div>
+                </div>
+
+                <!-- Big Potato Tap Button -->
+                <div class="relative my-auto flex items-center justify-center w-full max-w-[250px] aspect-square">
+                    <div class="absolute inset-0 bg-gradient-to-tr from-cyber-gold/20 via-cyber-purple/20 to-cyber-neon/20 rounded-full filter blur-3xl"></div>
+                    <button id="potato-btn" class="potato-glow relative w-full h-full rounded-full bg-gradient-to-tr from-amber-600 via-yellow-500 to-cyber-gold p-2 shadow-2xl border-4 border-yellow-300/50 outline-none flex items-center justify-center">
+                        <div class="w-full h-full rounded-full bg-cyber-card flex flex-col items-center justify-center border-2 border-cyber-border shadow-inner relative overflow-hidden group">
+                            <span class="text-8xl filter drop-shadow-[0_0_20px_rgba(255,199,0,0.5)]">🥔</span>
+                            <span class="mt-1 text-[11px] font-black tracking-widest text-cyber-gold uppercase">TAP TO MINE</span>
+                        </div>
+                    </button>
+                </div>
+
+                <!-- Energy Bar -->
+                <div class="w-full mt-1">
+                    <div class="flex justify-between items-center mb-1">
+                        <div class="flex items-center gap-1.5">
+                            <i class="fa-solid fa-bolt text-cyber-gold text-base"></i>
+                            <span class="font-extrabold text-xs" id="energy-num">1000 / 1000</span>
+                        </div>
+                        <span class="text-[11px] text-cyber-neon font-bold" id="pertap-text">+1 / tap</span>
+                    </div>
+                    <div class="w-full bg-slate-900 h-3 rounded-full overflow-hidden border border-cyber-border/50 p-[1.5px]">
+                        <div id="energy-bar" class="bg-gradient-to-r from-cyber-gold to-yellow-300 h-full rounded-full transition-all duration-150" style="width: 100%"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab 2: Blum / Tomato Drop Game -->
+            <div id="tab-drop" class="tab-content hidden space-y-4">
+                <div class="text-center py-1">
+                    <h2 class="text-2xl font-black text-white flex items-center justify-center gap-2">🍅 Drop Catcher Game</h2>
+                    <p class="text-xs text-gray-400">Tap falling tomatoes & potatoes before they hit bottom!</p>
+                </div>
+                <div id="drop-game-area" class="relative w-full h-[380px] bg-cyber-card rounded-2xl border border-cyber-border overflow-hidden flex flex-col items-center justify-center">
+                    <canvas id="drop-canvas" class="absolute inset-0 w-full h-full"></canvas>
+                    <div id="drop-start-overlay" class="relative z-10 text-center space-y-3 p-4">
+                        <span class="text-6xl">🍅</span>
+                        <h3 class="font-bold text-lg text-white">Catch & Earn Bonus Coins</h3>
+                        <p class="text-xs text-gray-400 max-w-[220px] mx-auto">30-second fast round. Tap items as fast as you can!</p>
+                        <button onclick="startDropGame()" class="px-6 py-3 bg-gradient-to-r from-cyber-red to-cyber-gold text-black font-black text-xs rounded-xl shadow-lg active:scale-95 transition">START DROP GAME (30s)</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab 3: Tasks Wall (Hamster Style) -->
+            <div id="tab-tasks" class="tab-content hidden space-y-4">
+                <div class="text-center py-1">
+                    <h2 class="text-2xl font-black text-white">Task Center</h2>
+                    <p class="text-xs text-gray-400">Complete daily tasks to get huge coin bonuses!</p>
+                </div>
+                <div class="bg-gradient-to-r from-cyber-purple/40 to-cyber-card p-4 rounded-2xl border border-cyber-purple/50 flex items-center justify-between">
+                    <div>
+                        <span class="text-[10px] text-cyber-neon font-black uppercase tracking-wider">Daily Streak</span>
+                        <h3 class="font-bold text-sm mt-0.5">Daily Check-In</h3>
+                        <p class="text-xs text-gray-300 mt-0.5">+<span id="daily-reward-val">5,000</span> Coins</p>
+                    </div>
+                    <button onclick="claimDailyReward()" class="px-4 py-2.5 bg-gradient-to-r from-cyber-gold to-yellow-400 text-black font-black text-xs rounded-xl active:scale-95 transition">CLAIM</button>
+                </div>
+                <h3 class="font-bold text-xs text-gray-400 uppercase tracking-wider mt-3">Available Partner Tasks</h3>
+                <div class="space-y-2.5" id="user-tasks-list"></div>
+            </div>
+
+            <!-- Tab 4: Referral / Squad System -->
+            <div id="tab-friends" class="tab-content hidden space-y-4">
+                <div class="text-center py-1">
+                    <h2 class="text-2xl font-black text-white">Invite Squad</h2>
+                    <p class="text-xs text-gray-400">Invite friends & get 10% bonus from all their earnings!</p>
+                </div>
+                <div class="bg-cyber-card p-4 rounded-2xl border border-cyber-border space-y-3">
+                    <span class="text-[10px] text-gray-400 font-extrabold uppercase">Your Exclusive Referral Link</span>
+                    <div class="flex gap-2">
+                        <input type="text" readonly id="ref-url-box" value="" class="w-full bg-cyber-bg border border-cyber-border rounded-xl px-3 py-2 text-xs font-mono text-gray-300 outline-none">
+                        <button onclick="copyRefLink()" class="px-4 bg-cyber-gold text-black font-extrabold text-xs rounded-xl active:scale-95 transition flex items-center gap-1"><i class="fa-solid fa-copy"></i> Copy</button>
+                    </div>
+                </div>
+                <h3 class="font-bold text-xs text-gray-400 uppercase tracking-wider">Invited Friends (<span id="ref-count-num">0</span>)</h3>
+                <div class="space-y-2" id="user-friends-list"></div>
+            </div>
+
+            <!-- Tab 5: Real Web3 TON Wallet Connect -->
+            <div id="tab-wallet" class="tab-content hidden space-y-4">
+                <div class="text-center py-1">
+                    <h2 class="text-2xl font-black text-white">Web3 Airdrop Wallet</h2>
+                    <p class="text-xs text-gray-400">Connect TON Wallet for upcoming Token Listing</p>
+                </div>
+                <div class="bg-gradient-to-br from-cyber-card via-cyber-card to-cyber-purple/20 p-5 rounded-2xl border border-cyber-purple/40 text-center space-y-4">
+                    <div class="w-16 h-16 rounded-2xl bg-blue-500/10 border border-blue-400/30 flex items-center justify-center mx-auto text-blue-400 text-3xl"><i class="fa-solid fa-wallet"></i></div>
+                    <div>
+                        <h3 class="font-extrabold text-base text-white">TON Connect Integration</h3>
+                        <p class="text-xs text-gray-400 mt-1">Supports Telegram Wallet, Tonkeeper, MyTonWallet & OpenMask</p>
+                    </div>
+                    <!-- Web3 TON Connect Button -->
+                    <div id="ton-connect-btn-container" class="flex justify-center"></div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Master Admin Control Panel (Fully Dynamic) -->
+        <div id="admin-view" class="hidden space-y-4">
+            <div class="bg-gradient-to-r from-cyber-purple/40 to-cyber-card p-4 rounded-2xl border border-cyber-purple/60 flex items-center justify-between">
+                <div>
+                    <h2 class="text-lg font-black text-white flex items-center gap-2"><i class="fa-solid fa-shield-halved text-cyber-neon"></i> Master Admin Control</h2>
+                    <p class="text-xs text-gray-400 mt-0.5">Control Game, Manage Tasks, Rewards & Users</p>
+                </div>
+                <span class="px-2.5 py-1 bg-cyber-gold/20 border border-cyber-gold text-cyber-gold text-[10px] font-black rounded-lg">OWNER</span>
+            </div>
+
+            <!-- Admin Sub-Navigation -->
+            <div class="grid grid-cols-3 gap-1 bg-cyber-card p-1 rounded-xl border border-cyber-border text-xs font-bold">
+                <button onclick="switchAdminTab('tasks')" id="adm-nav-tasks" class="adm-tab-btn py-2 text-center rounded-lg bg-cyber-purple text-white">Tasks</button>
+                <button onclick="switchAdminTab('broadcast')" id="adm-nav-broadcast" class="adm-tab-btn py-2 text-center rounded-lg text-gray-400">Broadcast</button>
+                <button onclick="switchAdminTab('settings')" id="adm-nav-settings" class="adm-tab-btn py-2 text-center rounded-lg text-gray-400">Settings</button>
+            </div>
+
+            <!-- Admin Tab 1: Task Management -->
+            <div id="adm-tab-tasks" class="adm-page space-y-3">
+                <div class="bg-cyber-card p-4 rounded-2xl border border-cyber-border space-y-3">
+                    <h3 class="font-bold text-xs text-cyber-gold uppercase flex items-center gap-2"><i class="fa-solid fa-plus-circle"></i> Create New Task</h3>
+                    <input type="text" id="adm-task-title" placeholder="Task Title (e.g. Join Telegram Channel)" class="w-full bg-cyber-bg border border-cyber-border rounded-xl p-2.5 text-xs text-white outline-none">
+                    <input type="url" id="adm-task-url" placeholder="Task Link (https://t.me/...)" class="w-full bg-cyber-bg border border-cyber-border rounded-xl p-2.5 text-xs text-white outline-none">
+                    <input type="number" id="adm-task-reward" placeholder="Reward Amount (Coins)" class="w-full bg-cyber-bg border border-cyber-border rounded-xl p-2.5 text-xs text-white outline-none">
+                    <select id="adm-task-icon" class="w-full bg-cyber-bg border border-cyber-border rounded-xl p-2.5 text-xs text-white outline-none">
+                        <option value="fa-paper-plane">Telegram Task</option>
+                        <option value="fa-youtube">YouTube Video Task</option>
+                        <option value="fa-tiktok">TikTok Video Task</option>
+                        <option value="fa-instagram">Instagram Task</option>
+                    </select>
+                    <button onclick="adminAddTask()" class="w-full py-2.5 bg-cyber-gold text-black font-extrabold text-xs rounded-xl active:scale-95 transition">PUBLISH TASK TO GAME</button>
+                </div>
+                <h3 class="font-bold text-xs text-gray-400 uppercase">Live Tasks (<span id="adm-task-count">0</span>)</h3>
+                <div class="space-y-2" id="adm-tasks-list"></div>
+            </div>
+
+            <!-- Admin Tab 2: Broadcast Announcement -->
+            <div id="adm-tab-broadcast" class="adm-page hidden space-y-3">
+                <div class="bg-cyber-card p-4 rounded-2xl border border-cyber-border space-y-3">
+                    <h3 class="font-bold text-xs text-cyber-neon uppercase flex items-center gap-2"><i class="fa-solid fa-bullhorn"></i> Send Global Notification</h3>
+                    <textarea id="adm-broadcast-text" rows="3" placeholder="Type notification message for all mini app users..." class="w-full bg-cyber-bg border border-cyber-border rounded-xl p-3 text-xs text-white outline-none resize-none"></textarea>
+                    <button onclick="adminSendBroadcast()" class="w-full py-2.5 bg-gradient-to-r from-cyber-purple to-cyber-neon text-black font-extrabold text-xs rounded-xl active:scale-95 transition">SEND ANNOUNCEMENT</button>
+                </div>
+            </div>
+
+            <!-- Admin Tab 3: Game Config -->
+            <div id="adm-tab-settings" class="adm-page hidden space-y-3">
+                <div class="bg-cyber-card p-4 rounded-2xl border border-cyber-border space-y-3">
+                    <h3 class="font-bold text-xs text-white uppercase"><i class="fa-solid fa-sliders"></i> Game Parameters</h3>
+                    <div>
+                        <label class="text-[11px] text-gray-400 font-bold">Coins Per Tap</label>
+                        <input type="number" id="adm-pertap-val" value="1" class="w-full mt-1 bg-cyber-bg border border-cyber-border rounded-xl p-2.5 text-xs text-white outline-none">
+                    </div>
+                    <div>
+                        <label class="text-[11px] text-gray-400 font-bold">Daily Bonus Coins</label>
+                        <input type="number" id="adm-daily-val" value="5000" class="w-full mt-1 bg-cyber-bg border border-cyber-border rounded-xl p-2.5 text-xs text-white outline-none">
+                    </div>
+                    <button onclick="adminSaveConfig()" class="w-full py-2.5 bg-cyber-neon text-black font-extrabold text-xs rounded-xl active:scale-95 transition">SAVE & UPDATE GAME</button>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Bottom Navigation Bar -->
+    <nav id="bottom-nav" class="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-cyber-bg/95 border-t border-cyber-border/80 p-2 grid grid-cols-5 gap-1 z-40 backdrop-blur">
+        <button onclick="switchTab('tap')" id="nav-tap" class="nav-btn flex flex-col items-center justify-center py-1.5 rounded-xl text-cyber-gold bg-cyber-card border border-cyber-gold/30"><i class="fa-solid fa-hand-pointer text-base"></i><span class="text-[10px] font-bold mt-1">Tap</span></button>
+        <button onclick="switchTab('drop')" id="nav-drop" class="nav-btn flex flex-col items-center justify-center py-1.5 rounded-xl text-gray-400"><i class="fa-solid fa-gamepad text-base"></i><span class="text-[10px] font-bold mt-1">Drop</span></button>
+        <button onclick="switchTab('tasks')" id="nav-tasks" class="nav-btn flex flex-col items-center justify-center py-1.5 rounded-xl text-gray-400"><i class="fa-solid fa-list-check text-base"></i><span class="text-[10px] font-bold mt-1">Tasks</span></button>
+        <button onclick="switchTab('friends')" id="nav-friends" class="nav-btn flex flex-col items-center justify-center py-1.5 rounded-xl text-gray-400"><i class="fa-solid fa-users text-base"></i><span class="text-[10px] font-bold mt-1">Squad</span></button>
+        <button onclick="switchTab('wallet')" id="nav-wallet" class="nav-btn flex flex-col items-center justify-center py-1.5 rounded-xl text-gray-400"><i class="fa-solid fa-wallet text-base"></i><span class="text-[10px] font-bold mt-1">Airdrop</span></button>
+    </nav>
+
+    <!-- Generic Modal Pop-up -->
+    <div id="pop-modal" class="fixed inset-0 bg-blac

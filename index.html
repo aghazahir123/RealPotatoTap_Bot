@@ -10,41 +10,44 @@
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
-    body { background: #0f0f11; color: #ffffff; height: 100vh; overflow: hidden; }
+    body { background: #0b0b0e; color: #ffffff; height: 100vh; overflow: hidden; }
     #root { display: flex; flex-direction: column; height: 100vh; }
     
+    /* Role Switcher Bar */
+    .sim-bar { background: #1f1f28; padding: 6px 12px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #333344; font-size: 11px; }
+    .sim-btn { background: #e76f51; border: none; color: white; padding: 3px 8px; border-radius: 4px; font-weight: bold; cursor: pointer; }
+
     /* Top Header Bar */
-    .header { background: #18181c; padding: 12px 15px; border-bottom: 1px solid #2a2a30; display: flex; justify-content: space-between; align-items: center; }
-    .badge { background: #2a2a32; padding: 6px 10px; border-radius: 8px; font-size: 11px; border: 1px solid #3a3a45; }
-    .badge-val { color: #f4a261; font-weight: bold; font-size: 13px; margin-top: 2px; }
-    .owner-tag { background: #e76f51; color: #fff; padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: bold; }
+    .header { background: #141419; padding: 10px 14px; border-bottom: 1px solid #262632; display: flex; justify-content: space-between; align-items: center; }
+    .badge { background: #20202a; padding: 5px 9px; border-radius: 8px; font-size: 10px; border: 1px solid #323242; }
+    .badge-val { color: #f4a261; font-weight: bold; font-size: 12px; margin-top: 2px; }
+    .owner-tag { background: #e76f51; color: #fff; padding: 2px 6px; border-radius: 4px; font-size: 9px; font-weight: bold; }
 
     /* Main Scroll Area */
-    .content { flex: 1; overflow-y: auto; padding: 15px; position: relative; padding-bottom: 70px; }
+    .content { flex: 1; overflow-y: auto; padding: 14px; position: relative; padding-bottom: 70px; }
 
-    /* Bottom Navigation */
-    .nav { position: fixed; bottom: 0; left: 0; right: 0; height: 60px; background: #141417; border-top: 1px solid #282830; display: flex; justify-content: space-around; align-items: center; z-index: 100; }
-    .nav-item { background: none; border: none; color: #777788; font-size: 11px; display: flex; flex-direction: column; align-items: center; gap: 3px; cursor: pointer; flex: 1; }
+    /* Bottom Navigation Toolbar */
+    .nav { position: fixed; bottom: 0; left: 0; right: 0; height: 60px; background: #121216; border-top: 1px solid #262632; display: flex; justify-content: space-around; align-items: center; z-index: 100; }
+    .nav-item { background: none; border: none; color: #6e6e82; font-size: 10px; display: flex; flex-direction: column; align-items: center; gap: 3px; cursor: pointer; flex: 1; }
     .nav-item.active { color: #f4a261; font-weight: bold; }
     .nav-item span { font-size: 18px; }
 
-    /* Card UI Elements */
-    .card { background: #1c1c22; border: 1px solid #2d2d38; border-radius: 12px; padding: 14px; margin-bottom: 12px; }
-    .card-title { font-size: 15px; color: #f4a261; font-weight: bold; margin-bottom: 6px; display: flex; justify-content: space-between; }
-    .btn { background: #2a9d8f; border: none; color: white; padding: 8px 14px; border-radius: 8px; font-weight: bold; cursor: pointer; width: 100%; margin-top: 8px; font-size: 13px; }
-    .btn:disabled { background: #3d3d4a; color: #777; }
+    /* Cards UI Elements */
+    .card { background: #181820; border: 1px solid #2b2b3a; border-radius: 12px; padding: 12px; margin-bottom: 10px; }
+    .card-title { font-size: 14px; color: #f4a261; font-weight: bold; margin-bottom: 6px; display: flex; justify-content: space-between; }
+    .btn { background: #2a9d8f; border: none; color: white; padding: 8px 12px; border-radius: 8px; font-weight: bold; cursor: pointer; width: 100%; margin-top: 6px; font-size: 12px; }
+    .btn:disabled { background: #353545; color: #666; }
     .btn-danger { background: #e76f51; }
 
     /* Tap Screen */
-    .tap-container { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 320px; }
-    .potato-avatar { width: 170px; height: 170px; border-radius: 50%; background: radial-gradient(circle, #e76f51, #e9c46a); border: 5px solid #f4a261; display: flex; align-items: center; justify-content: center; font-size: 85px; cursor: pointer; box-shadow: 0 0 25px rgba(244, 162, 97, 0.3); transition: transform 0.08s; margin: 15px 0; }
-    .potato-avatar:active { transform: scale(0.93); }
-    .progress-bg { width: 85%; height: 10px; background: #2a2a35; border-radius: 5px; overflow: hidden; margin-top: 10px; }
+    .tap-container { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 280px; }
+    .potato-avatar { width: 160px; height: 160px; border-radius: 50%; background: radial-gradient(circle, #e76f51, #e9c46a); border: 5px solid #f4a261; display: flex; align-items: center; justify-content: center; font-size: 80px; cursor: pointer; box-shadow: 0 0 25px rgba(244, 162, 97, 0.3); transition: transform 0.08s; margin: 12px 0; }
+    .potato-avatar:active { transform: scale(0.92); }
+    .progress-bg { width: 85%; height: 10px; background: #22222e; border-radius: 5px; overflow: hidden; margin-top: 8px; }
     .progress-fill { height: 100%; background: linear-gradient(90deg, #e76f51, #2a9d8f); transition: width 0.2s; }
 
-    /* Grid Views */
-    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-    .input-box { width: 100%; padding: 10px; background: #121215; border: 1px solid #333342; border-radius: 8px; color: #fff; margin: 6px 0; font-size: 13px; }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .input-box { width: 100%; padding: 8px; background: #101014; border: 1px solid #2e2e3e; border-radius: 6px; color: #fff; margin: 5px 0; font-size: 12px; }
   </style>
 </head>
 <body>
@@ -56,25 +59,31 @@
     function PotatoApp() {
       // User State
       const [userId, setUserId] = React.useState(SUPER_ADMIN_ID);
-      const [coins, setCoins] = React.useState(12500);
-      const [pph, setPph] = React.useState(250);
+      const [coins, setCoins] = React.useState(25000);
+      const [pph, setPph] = React.useState(500);
       const [energy, setEnergy] = React.useState(1000);
       const [wallet, setWallet] = React.useState("");
       const [tab, setTab] = React.useState("tap");
 
-      // Daily Combos & Morse State
+      // Daily Combos & Cipher
       const [comboClaimed, setComboClaimed] = React.useState(false);
       const [cipherInput, setCipherInput] = React.useState("");
       const [cipherSolved, setCipherSolved] = React.useState(false);
 
       // Tasks State
-      const [ytCode, setYtCode] = React.useState("");
+      const [ytCode, setYtCode] = React.value = React.useState("");
       const [ytDone, setYtDone] = React.useState(false);
 
-      // Check Owner Status
+      // Team Members Database State (Admin Panel)
+      const [teamList, setTeamList] = React.useState([]);
+      const [newTeamId, setNewTeamId] = React.useState("");
+      const [permTasks, setPermTasks] = React.useState(true);
+      const [permCombo, setPermCombo] = React.useState(false);
+
+      // Check Owner
       const isOwner = String(userId) === SUPER_ADMIN_ID;
 
-      // Auto Profit Generator (Hamster PPH Engine)
+      // Auto Profit Generator
       React.useEffect(() => {
         const timer = setInterval(() => {
           setCoins(c => c + Math.floor(pph / 3600));
@@ -85,7 +94,7 @@
       // Energy Auto Recharge
       React.useEffect(() => {
         const timer = setInterval(() => {
-          setEnergy(e => Math.min(1000, e + 2));
+          setEnergy(e => Math.min(1000, e + 3));
         }, 1000);
         return () => clearInterval(timer);
       }, []);
@@ -98,30 +107,36 @@
         }
       };
 
-      // Morse Cipher Submit
+      // Morse Cipher Check
       const checkCipher = () => {
         if (cipherInput.toUpperCase() === "POTATO") {
           setCoins(c => c + 1000000);
           setCipherSolved(true);
-          alert("🎉 Correct Morse Cipher! 1,000,000 $POTATO Coins added!");
+          alert("🎉 Correct Cipher! +1,000,000 $POTATO Coins!");
         } else {
-          alert("❌ Incorrect Cipher Code!");
+          alert("❌ Incorrect Code! Try: POTATO");
         }
       };
 
-      // YouTube Task Check
-      const verifyYt = () => {
-        if (ytCode === "POTATO789") {
-          setCoins(c => c + 250000);
-          setYtDone(true);
-          alert("✅ Code Verified! +250,000 Coins");
-        } else {
-          alert("❌ Invalid Video Secret Code!");
-        }
+      // Add Team Member (Owner Function)
+      const handleAddTeam = () => {
+        if (!newTeamId) return alert("Please enter a valid Telegram ID!");
+        setTeamList(prev => [...prev, { id: newTeamId, tasks: permTasks, combo: permCombo }]);
+        setNewTeamId("");
+        alert(`✅ Team Member ID ${newTeamId} added successfully!`);
       };
 
       return (
         <div style={{height: '100%', display: 'flex', flexDirection: 'column'}}>
+          
+          {/* Top Quick Role Switcher */}
+          <div className="sim-bar">
+            <span>Current Active ID: <strong>{userId}</strong></span>
+            <button className="sim-btn" onClick={() => setUserId(userId === SUPER_ADMIN_ID ? "12345678" : SUPER_ADMIN_ID)}>
+              Switch to {userId === SUPER_ADMIN_ID ? "Regular Player" : "Super Boss Owner"}
+            </button>
+          </div>
+
           {/* Header Stats */}
           <div className="header">
             <div className="badge">
@@ -133,7 +148,7 @@
               <div className="badge-val">⚡ +{pph.toLocaleString()}/h</div>
             </div>
             <div className="badge">
-              <div>Role</div>
+              <div>Status</div>
               <div className="badge-val">
                 {isOwner ? <span className="owner-tag">SUPER BOSS 👑</span> : "Player 🥔"}
               </div>
@@ -143,7 +158,7 @@
           {/* Main Display Views */}
           <div className="content">
             
-            {/* 1. TAP & HARVEST SECTION */}
+            {/* 1. TAP & HARVEST */}
             {tab === "tap" && (
               <div className="tap-container">
                 <h3 style={{color: '#f4a261'}}>Potato CEO Mining</h3>
@@ -151,127 +166,130 @@
                 <div className="progress-bg">
                   <div className="progress-fill" style={{width: `${(energy / 1000) * 100}%`}}></div>
                 </div>
-                <p style={{fontSize: '12px', color: '#aaa', marginTop: '6px'}}>⚡ Energy: {energy} / 1000</p>
+                <p style={{fontSize: '11px', color: '#aaa', marginTop: '6px'}}>⚡ Energy: {energy} / 1000</p>
                 
                 {/* Tomarket 3-Hour Harvest Block */}
-                <div className="card" style={{marginTop: '20px', width: '100%'}}>
-                  <div className="card-title">🍅 Tomarket 3-Hour Farm</div>
-                  <p style={{fontSize: '12px', color: '#aaa'}}>Auto-farming rewards every 3 hours!</p>
+                <div className="card" style={{marginTop: '15px', width: '100%'}}>
+                  <div className="card-title">🍅 Tomarket 3-Hour Harvest</div>
+                  <p style={{fontSize: '11px', color: '#aaa'}}>Auto-farming crops every 3 hours!</p>
                   <button className="btn" onClick={() => { setCoins(c => c + 15000); alert("🌾 Claimed 15,000 Harvest Coins!"); }}>🌾 Claim Harvest (+15,000)</button>
                 </div>
               </div>
             )}
 
-            {/* 2. HAMSTER COMBOS & CARDS */}
+            {/* 2. HAMSTER CARDS & COMBOS */}
             {tab === "mine" && (
               <div>
-                {/* Daily Combo Box */}
                 <div className="card" style={{border: '1px solid #f4a261'}}>
                   <div className="card-title">🐹 Daily Combo (5,000,000 Coins)</div>
-                  <p style={{fontSize: '12px', color: '#aaa', marginBottom: '8px'}}>Upgrade 3 secret cards to claim daily bonus!</p>
+                  <p style={{fontSize: '11px', color: '#aaa', marginBottom: '8px'}}>Unlock 3 daily secret cards for instant bonus!</p>
                   <button className="btn" disabled={comboClaimed} onClick={() => { setCoins(c => c + 5000000); setComboClaimed(true); }}>
-                    {comboClaimed ? "✅ Claimed Today" : "🎁 Unlock Daily Combo (+5M)"}
+                    {comboClaimed ? "✅ Claimed Today" : "🎁 Claim Daily Combo (+5M)"}
                   </button>
                 </div>
 
-                {/* Daily Cipher Box */}
                 <div className="card">
-                  <div className="card-title">🔑 Daily Cipher (1,000,000 Coins)</div>
-                  <p style={{fontSize: '12px', color: '#aaa'}}>Enter secret Morse word (Hint: POTATO):</p>
+                  <div className="card-title">🔑 Daily Cipher Morse Code</div>
+                  <p style={{fontSize: '11px', color: '#aaa'}}>Type daily code (Word: POTATO):</p>
                   <input type="text" className="input-box" placeholder="Enter Code..." value={cipherInput} onChange={e => setCipherInput(e.target.value)} disabled={cipherSolved} />
                   <button className="btn" onClick={checkCipher} disabled={cipherSolved}>
-                    {cipherSolved ? "✅ Solved" : "Submit Code"}
+                    {cipherSolved ? "✅ Solved" : "Submit Cipher Code (+1M)"}
                   </button>
                 </div>
 
-                {/* Upgrade Cards Grid */}
-                <h4 style={{margin: '12px 0 8px 0', color: '#f4a261'}}>Mining Cards (PPH Boosters)</h4>
+                <h4 style={{margin: '10px 0 6px 0', color: '#f4a261'}}>Mining Upgrade Cards</h4>
                 <div className="grid-2">
                   <div className="card">
-                    <div style={{fontWeight: 'bold', fontSize: '13px'}}>🥔 Organic Farm</div>
-                    <div style={{fontSize: '11px', color: '#aaa', margin: '4px 0'}}>+120 PPH</div>
-                    <button className="btn" onClick={() => { if(coins >= 1000){ setCoins(c => c - 1000); setPph(p => p + 120); } }}>Cost: 1,000 🥔</button>
+                    <div style={{fontWeight: 'bold', fontSize: '12px'}}>🥔 Aloo Processing</div>
+                    <div style={{fontSize: '10px', color: '#aaa', margin: '3px 0'}}>+150 PPH</div>
+                    <button className="btn" onClick={() => { if(coins >= 1000){ setCoins(c => c - 1000); setPph(p => p + 150); } }}>Cost: 1,000 🥔</button>
                   </div>
                   <div className="card">
-                    <div style={{fontWeight: 'bold', fontSize: '13px'}}>🍟 Fry Machine</div>
-                    <div style={{fontSize: '11px', color: '#aaa', margin: '4px 0'}}>+350 PPH</div>
-                    <button className="btn" onClick={() => { if(coins >= 3000){ setCoins(c => c - 3000); setPph(p => p + 350); } }}>Cost: 3,000 🥔</button>
+                    <div style={{fontWeight: 'bold', fontSize: '12px'}}>🍟 French Fry Factory</div>
+                    <div style={{fontSize: '10px', color: '#aaa', margin: '3px 0'}}>+450 PPH</div>
+                    <button className="btn" onClick={() => { if(coins >= 3000){ setCoins(c => c - 3000); setPph(p => p + 450); } }}>Cost: 3,000 🥔</button>
                   </div>
                 </div>
               </div>
             )}
 
-            {/* 3. TOMARKET MINI-GAME */}
-            {tab === "game" && <SlicingGameOnCanvas onWin={(score) => setCoins(c => c + score)} />}
+            {/* 3. TOMARKET MINI GAME */}
+            {tab === "game" && <SlicingGameCanvas onWin={(s) => setCoins(c => c + s)} />}
 
-            {/* 4. TASKS & YOUTUBE SECTION */}
+            {/* 4. TASKS SECTION */}
             {tab === "tasks" && (
               <div>
-                <h3 style={{marginBottom: '10px', color: '#f4a261'}}>📋 Tasks & Quests</h3>
-                
-                {/* YouTube Task */}
+                <h3 style={{marginBottom: '10px', color: '#f4a261'}}>📋 Tasks & Rewards</h3>
                 <div className="card">
-                  <div className="card-title">▶️ Watch YouTube Video</div>
-                  <p style={{fontSize: '12px', color: '#aaa'}}>Watch video, find secret code and enter below:</p>
-                  <a href="https://youtube.com" target="_blank" style={{color: '#2a9d8f', fontSize: '12px', display: 'inline-block', margin: '6px 0'}}>📺 Watch Video</a>
-                  <input type="text" className="input-box" placeholder="Video Secret Code (Try: POTATO789)" value={ytCode} onChange={e => setYtCode(e.target.value)} disabled={ytDone} />
-                  <button className="btn" onClick={verifyYt} disabled={ytDone}>{ytDone ? "✅ Reward Claimed" : "Verify Code (+250k)"}</button>
-                </div>
-
-                {/* Telegram Task */}
-                <div className="card">
-                  <div className="card-title">📢 Join Official Telegram</div>
-                  <p style={{fontSize: '12px', color: '#aaa'}}>Join channel for updates & payouts.</p>
-                  <button className="btn" onClick={() => { setCoins(c => c + 100000); alert("✅ +100,000 Coins Claimed!"); }}>Join & Claim (+100k)</button>
+                  <div className="card-title">▶️ YouTube Video Quest</div>
+                  <p style={{fontSize: '11px', color: '#aaa'}}>Watch video and enter secret code (POTATO789):</p>
+                  <input type="text" className="input-box" placeholder="Secret Code..." value={ytCode} onChange={e => setYtCode(e.target.value)} disabled={ytDone} />
+                  <button className="btn" onClick={() => { if(ytCode === "POTATO789"){ setCoins(c => c + 250000); setYtDone(true); alert("✅ Code Verified! +250,000 Coins"); } else { alert("❌ Invalid Code!"); } }} disabled={ytDone}>
+                    {ytDone ? "✅ Reward Claimed" : "Verify Code (+250k)"}
+                  </button>
                 </div>
               </div>
             )}
 
-            {/* 5. REFERRAL & WALLET */}
+            {/* 5. WALLET & REFERRAL */}
             {tab === "wallet" && (
               <div>
                 <div className="card">
                   <div className="card-title">👥 Referral Program</div>
-                  <p style={{fontSize: '12px', color: '#aaa'}}>Invite friends and earn 10% of their earnings!</p>
+                  <p style={{fontSize: '11px', color: '#aaa'}}>Invite friends and get 10% earnings bonus!</p>
                   <input type="text" className="input-box" readOnly value={`https://t.me/PotatoBot?start=ref_${userId}`} />
-                  <button className="btn" onClick={() => alert("Referral Link Copied!")}>📋 Copy Invite Link</button>
+                  <button className="btn" onClick={() => alert("Invite Link Copied!")}>📋 Copy Invite Link</button>
                 </div>
 
                 <div className="card">
                   <div className="card-title">👛 TON Web3 Wallet</div>
-                  <p style={{fontSize: '12px', color: '#aaa'}}>Connect Tonkeeper or Telegram Wallet for Airdrop.</p>
-                  <input type="text" className="input-box" placeholder="Enter TON Wallet Address (EQ...)" value={wallet} onChange={e => setWallet(e.target.value)} />
-                  <button className="btn" onClick={() => alert("✅ Wallet Address Saved Successfully!")}>Save Wallet</button>
+                  <p style={{fontSize: '11px', color: '#aaa'}}>Connect TON Wallet for Airdrop distribution.</p>
+                  <input type="text" className="input-box" placeholder="Enter TON Address (EQ...)" value={wallet} onChange={e => setWallet(e.target.value)} />
+                  <button className="btn" onClick={() => alert("✅ TON Wallet Saved!")}>Save Wallet Address</button>
                 </div>
               </div>
             )}
 
-            {/* 6. OWNER & TEAM ADMIN PANEL */}
+            {/* 6. ADMIN & TEAM CONTROL (WORKING NOW!) */}
             {tab === "admin" && (
               <div>
-                <h3 style={{marginBottom: '10px', color: '#e76f51'}}>🛡️ Admin & Team Control</h3>
+                <h3 style={{marginBottom: '10px', color: '#e76f51'}}>🛡️ Owner & Team Panel</h3>
                 {isOwner ? (
                   <div>
                     <div className="card" style={{border: '1px solid #e76f51'}}>
-                      <div className="card-title">👑 Master Owner Portal ({SUPER_ADMIN_ID})</div>
-                      <p style={{fontSize: '12px', color: '#2a9d8f'}}>Full Unrestricted Master Power Active!</p>
+                      <div className="card-title">👑 Super Boss Owner Controls ({SUPER_ADMIN_ID})</div>
+                      <p style={{fontSize: '11px', color: '#2a9d8f', marginBottom: '10px'}}>Aap ke paas Full Master Control Active hai!</p>
                       
-                      <hr style={{borderColor: '#2d2d38', margin: '10px 0'}} />
-                      <h5 style={{color: '#f4a261'}}>Add Team Member & Assign Rights:</h5>
-                      <input type="text" className="input-box" placeholder="Team Member Telegram ID (e.g. 9876543)" />
-                      
-                      <div style={{fontSize: '12px', textAlign: 'left', margin: '8px 0'}}>
-                        <input type="checkbox" id="p1" /> <label htmlFor="p1">Can Manage YouTube Tasks</label><br/>
-                        <input type="checkbox" id="p2" /> <label htmlFor="p2">Can Change Daily Combos</label><br/>
-                        <input type="checkbox" id="p3" /> <label htmlFor="p3">Can View Users Database</label>
+                      <div style={{background: '#101014', padding: '10px', borderRadius: '8px', marginBottom: '10px'}}>
+                        <h5 style={{color: '#f4a261', marginBottom: '6px'}}>➕ Add New Team Member:</h5>
+                        <input type="text" className="input-box" placeholder="Enter Member Telegram ID" value={newTeamId} onChange={e => setNewTeamId(e.target.value)} />
+                        
+                        <div style={{fontSize: '11px', margin: '8px 0'}}>
+                          <label><input type="checkbox" checked={permTasks} onChange={e => setPermTasks(e.target.checked)} /> Allow YouTube Task Management</label><br/>
+                          <label><input type="checkbox" checked={permCombo} onChange={e => setPermCombo(e.target.checked)} /> Allow Daily Combo Updates</label>
+                        </div>
+
+                        <button className="btn btn-danger" onClick={handleAddTeam}>Grant Restricted Rights</button>
                       </div>
 
-                      <button className="btn btn-danger">Grant Selected Rights</button>
+                      {/* Active Team Members List */}
+                      <div>
+                        <h5 style={{color: '#fff', margin: '8px 0'}}>Current Team Members ({teamList.length}):</h5>
+                        {teamList.length === 0 ? (
+                          <p style={{fontSize: '11px', color: '#777'}}>No team members added yet.</p>
+                        ) : (
+                          teamList.map((m, idx) => (
+                            <div key={idx} style={{background: '#22222e', padding: '6px', borderRadius: '4px', fontSize: '11px', margin: '4px 0'}}>
+                              🆔 ID: <strong>{m.id}</strong> | Tasks: {m.tasks ? "✅" : "❌"} | Combo: {m.combo ? "✅" : "❌"}
+                            </div>
+                          ))
+                        )}
+                      </div>
                     </div>
                   </div>
                 ) : (
                   <div className="card">
-                    <p style={{color: '#e76f51'}}>⚠️ Aap Super Admin nahi hain. Aap ke paas sirf allowed team tasks ki access hogi!</p>
+                    <p style={{color: '#e76f51', fontSize: '12px'}}>⚠️ Access Restricted! Aap Super Admin nahi hain. Sirf Master Owner (ID: 7208905905) permissions grant kar sakta hai.</p>
                   </div>
                 )}
               </div>
@@ -279,7 +297,7 @@
 
           </div>
 
-          {/* Bottom Navigation Toolbar */}
+          {/* Navigation Bar */}
           <div className="nav">
             <button className={`nav-item ${tab === "tap" ? "active" : ""}`} onClick={() => setTab("tap")}>
               <span>🥔</span>Tap
@@ -304,8 +322,8 @@
       );
     }
 
-    // Tomarket Real Slicing Game Engine Component
-    function SlicingGameOnCanvas({ onWin }) {
+    // Tomarket Real Slicing Game Engine
+    function SlicingGameCanvas({ onWin }) {
       const canvasRef = React.useRef(null);
       const [playing, setPlaying] = React.useState(false);
 
@@ -361,7 +379,7 @@
         };
         loop();
 
-        // Canvas Slice Touch Event
+        // Canvas Slice Click Event
         canvas.onclick = (e) => {
           const rect = canvas.getBoundingClientRect();
           const cx = e.clientX - rect.left;
@@ -382,20 +400,4 @@
 
       return (
         <div style={{textAlign: 'center'}}>
-          <h3 style={{color: '#f4a261', marginBottom: '10px'}}>🎯 Tomarket 30s Slicing Game</h3>
-          {!playing ? (
-            <div className="card">
-              <p style={{fontSize: '12px', color: '#aaa', marginBottom: '10px'}}>Slice Potatoes (🥔) & Stars (⭐). Avoid Bombs (💣)!</p>
-              <button className="btn" onClick={runGame}>🚀 Start Game</button>
-            </div>
-          ) : (
-            <canvas ref={canvasRef} width={320} height={350} style={{background: '#121215', borderRadius: '12px', border: '1px solid #333'}}></canvas>
-          )}
-        </div>
-      );
-    }
-
-    ReactDOM.createRoot(document.getElementById('root')).render(<PotatoApp />);
-  </script>
-</body>
-</html>
+          <h3 style={{color: '#f4a261', marginBottom: '8px'}}>🎯 Tomarket 30s 

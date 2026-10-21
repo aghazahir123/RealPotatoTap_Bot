@@ -3,13 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Potato Tap Official</title>
+    <title>Potato Tap Game</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         body { user-select: none; -webkit-user-select: none; touch-action: manipulation; background-color: #0b1120; color: white; font-family: sans-serif; }
-        .tap-btn { touch-action: manipulation; }
         .tap-btn:active { transform: scale(0.92); }
         @keyframes floatUp { 0% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-70px); } }
         .floating-num { position: absolute; pointer-events: none; font-weight: 800; font-size: 1.8rem; color: #facc15; animation: floatUp 0.6s ease-out forwards; z-index: 50; }
@@ -23,7 +22,7 @@
             <span class="text-2xl">🥔</span>
             <div>
                 <h3 class="font-bold text-sm" id="user-name">Master Owner</h3>
-                <span class="text-xs text-yellow-400 font-semibold" id="level-badge">Bronze Tapper</span>
+                <span class="text-xs text-yellow-400 font-semibold">Bronze Tapper</span>
             </div>
         </div>
         <!-- Owner Admin Button -->
@@ -45,8 +44,8 @@
             </div>
 
             <!-- Big Tap Potato Button -->
-            <button id="tap-btn" class="tap-btn relative w-56 h-56 rounded-full bg-gradient-to-tr from-purple-600 via-slate-800 to-yellow-500 p-2 shadow-2xl border-4 border-yellow-400/40 outline-none flex items-center justify-center">
-                <div class="w-full h-full rounded-full bg-slate-900 flex flex-col items-center justify-center border-2 border-slate-800 shadow-inner">
+            <button id="tap-btn" class="relative w-56 h-56 rounded-full bg-gradient-to-tr from-purple-600 via-slate-800 to-yellow-500 p-2 shadow-2xl border-4 border-yellow-400/40 outline-none flex items-center justify-center transition">
+                <div class="w-full h-full rounded-full bg-slate-900 flex flex-col items-center justify-center border-2 border-slate-800 shadow-inner pointer-events-none">
                     <span class="text-8xl">🥔</span>
                     <span class="mt-2 text-[10px] font-black text-yellow-400 tracking-widest uppercase">TAP TO MINE</span>
                 </div>
@@ -56,7 +55,7 @@
             <div class="w-full space-y-1">
                 <div class="flex justify-between text-xs font-bold">
                     <span class="text-yellow-400">⚡ <span id="energy-text">1000 / 1000</span></span>
-                    <span class="text-cyan-400" id="pertap-text">+1 / tap</span>
+                    <span class="text-cyan-400">+1 / tap</span>
                 </div>
                 <div class="w-full bg-slate-800 h-3 rounded-full overflow-hidden p-[2px] border border-slate-700">
                     <div id="energy-bar" class="bg-gradient-to-r from-yellow-500 to-amber-300 h-full rounded-full transition-all duration-150" style="width: 100%"></div>
@@ -64,19 +63,7 @@
             </div>
         </div>
 
-        <!-- TAB 2: DROP GAME -->
-        <div id="tab-drop" class="tab-page hidden space-y-3 text-center">
-            <h2 class="text-xl font-bold text-white">🍅 Tomato Drop Game</h2>
-            <p class="text-xs text-slate-400">Tap falling items to earn +50 coins each!</p>
-            <div class="relative w-full h-72 bg-slate-900 rounded-2xl border border-slate-800 overflow-hidden flex items-center justify-center">
-                <canvas id="drop-canvas" class="absolute inset-0 w-full h-full"></canvas>
-                <div id="drop-overlay" class="relative z-10 space-y-3">
-                    <button onclick="startDropGame()" class="px-6 py-3 bg-red-500 text-white font-bold text-xs rounded-xl shadow-lg">START DROP GAME (30s)</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- TAB 3: TASKS WALL -->
+        <!-- TAB 2: TASKS WALL -->
         <div id="tab-tasks" class="tab-page hidden space-y-3">
             <h2 class="text-xl font-bold text-white text-center">Task Center</h2>
             <div class="bg-slate-800 p-4 rounded-xl border border-slate-700 flex justify-between items-center">
@@ -89,23 +76,13 @@
             <div id="user-tasks-list" class="space-y-2"></div>
         </div>
 
-        <!-- TAB 4: SQUAD -->
+        <!-- TAB 3: SQUAD -->
         <div id="tab-friends" class="tab-page hidden space-y-3">
             <h2 class="text-xl font-bold text-white text-center">Invite Squad</h2>
             <div class="bg-slate-800 p-4 rounded-xl border border-slate-700 space-y-2">
                 <span class="text-xs text-slate-400 font-bold uppercase">Your Invite Link</span>
                 <input type="text" readonly id="ref-url" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-xs text-slate-300 font-mono">
                 <button onclick="copyRef()" class="w-full py-2 bg-purple-600 text-white font-bold text-xs rounded-xl">COPY REFERRAL LINK</button>
-            </div>
-        </div>
-
-        <!-- TAB 5: AIRDROP WALLET -->
-        <div id="tab-wallet" class="tab-page hidden space-y-4 text-center">
-            <h2 class="text-xl font-bold text-white">TON Web3 Airdrop</h2>
-            <div class="bg-slate-800 p-5 rounded-2xl border border-slate-700 space-y-3">
-                <i class="fa-solid fa-wallet text-4xl text-blue-400"></i>
-                <p class="text-xs text-slate-400">TON Connect Integration Ready</p>
-                <button onclick="alert('Wallet connect coming in next release!')" class="w-full py-2.5 bg-blue-500 text-white font-bold text-xs rounded-xl">CONNECT TON WALLET</button>
             </div>
         </div>
 
@@ -124,12 +101,10 @@
     </div>
 
     <!-- BOTTOM NAVIGATION -->
-    <nav id="bottom-nav" class="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-slate-900 border-t border-slate-800 p-2 grid grid-cols-5 gap-1 z-40">
+    <nav id="bottom-nav" class="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-slate-900 border-t border-slate-800 p-2 grid grid-cols-3 gap-1 z-40">
         <button onclick="switchTab('tap')" id="nav-tap" class="flex flex-col items-center py-1 text-yellow-400 font-bold"><i class="fa-solid fa-hand-pointer text-base"></i><span class="text-[10px] mt-0.5">Tap</span></button>
-        <button onclick="switchTab('drop')" id="nav-drop" class="flex flex-col items-center py-1 text-slate-400 font-bold"><i class="fa-solid fa-gamepad text-base"></i><span class="text-[10px] mt-0.5">Drop</span></button>
         <button onclick="switchTab('tasks')" id="nav-tasks" class="flex flex-col items-center py-1 text-slate-400 font-bold"><i class="fa-solid fa-list-check text-base"></i><span class="text-[10px] mt-0.5">Tasks</span></button>
         <button onclick="switchTab('friends')" id="nav-friends" class="flex flex-col items-center py-1 text-slate-400 font-bold"><i class="fa-solid fa-users text-base"></i><span class="text-[10px] mt-0.5">Squad</span></button>
-        <button onclick="switchTab('wallet')" id="nav-wallet" class="flex flex-col items-center py-1 text-slate-400 font-bold"><i class="fa-solid fa-wallet text-base"></i><span class="text-[10px] mt-0.5">Airdrop</span></button>
     </nav>
 
     <script>
@@ -160,11 +135,10 @@
             document.getElementById('admin-btn').classList.remove('hidden');
         }
 
-        // Fast Tap Event Handler
+        // Reliable Tap Handler (Supports both Click and Touch)
         const tapBtn = document.getElementById('tap-btn');
         
         function handleTap(e) {
-            if (e) e.preventDefault();
             if (energy < perTap) return;
 
             energy -= perTap;
@@ -172,19 +146,27 @@
 
             updateUI();
 
-            let x = (e && e.clientX) ? e.clientX : (window.innerWidth / 2);
-            let y = (e && e.clientY) ? e.clientY : (window.innerHeight / 2);
+            // Floating Number Animation Position
+            let clientX = window.innerWidth / 2;
+            let clientY = window.innerHeight / 2;
+            if (e) {
+                if (e.clientX) { clientX = e.clientX; clientY = e.clientY; }
+                else if (e.touches && e.touches[0]) { clientX = e.touches[0].clientX; clientY = e.touches[0].clientY; }
+            }
 
             let num = document.createElement('div');
             num.className = 'floating-num';
             num.innerText = '+' + perTap;
-            num.style.left = (x - 15) + 'px';
-            num.style.top = (y - 30) + 'px';
+            num.style.left = (clientX - 15) + 'px';
+            num.style.top = (clientY - 30) + 'px';
             document.body.appendChild(num);
             setTimeout(() => num.remove(), 600);
         }
 
-        tapBtn.addEventListener('pointerdown', handleTap);
+        tapBtn.addEventListener('click', handleTap);
+        tapBtn.addEventListener('touchstart', (e) => {
+            handleTap(e);
+        }, { passive: true });
 
         function updateUI() {
             document.getElementById('score').innerText = coins;

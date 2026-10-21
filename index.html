@@ -3,157 +3,104 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Potato Clicker Mini App</title>
+    <title>Potato Tap Ultimate</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
     <style>
-        body { user-select: none; -webkit-user-select: none; touch-action: manipulation; background-color: #0f172a; color: white; }
+        body { user-select: none; -webkit-user-select: none; touch-action: manipulation; background-color: #0b1120; color: white; font-family: sans-serif; }
         .tap-btn:active { transform: scale(0.92); }
         @keyframes floatUp { 0% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-70px); } }
-        .floating-num { position: absolute; pointer-events: none; font-weight: 800; font-size: 1.5rem; color: #38bdf8; animation: floatUp 0.6s ease-out forwards; z-index: 50; }
+        .floating-num { position: absolute; pointer-events: none; font-weight: 800; font-size: 1.5rem; color: #facc15; animation: floatUp 0.6s ease-out forwards; z-index: 50; }
     </style>
 </head>
-<body class="flex flex-col min-h-screen justify-between p-4 max-w-md mx-auto">
-    
-    <!-- Header -->
+<body class="flex flex-col min-h-screen justify-between p-4 max-w-md mx-auto relative pb-20">
+
+    <!-- Header Profile -->
     <div class="flex items-center justify-between border-b border-slate-800 pb-3">
         <div class="flex items-center gap-2">
             <span class="text-2xl">🥔</span>
             <div>
-                <h3 class="font-bold text-sm" id="user-name">Player</h3>
-                <span class="text-xs text-yellow-400 font-semibold">Tapper</span>
+                <h3 class="font-bold text-sm" id="user-name">Loading...</h3>
+                <span class="text-xs text-yellow-400 font-semibold" id="level-badge">Bronze Tapper</span>
             </div>
         </div>
-        <!-- Admin Button (Locked to ID 7208905905) -->
-        <button id="admin-btn" onclick="toggleAdminView()" class="hidden px-3 py-1.5 rounded-xl bg-purple-600/30 border border-purple-500 text-purple-300 text-xs font-bold">
-            Admin Panel
+        <!-- Strictly Locked Admin Button -->
+        <button id="admin-btn" onclick="toggleAdmin()" class="hidden px-3 py-1.5 rounded-xl bg-purple-600/30 border border-purple-500 text-purple-300 text-xs font-bold">
+            Owner Panel
         </button>
     </div>
 
-    <!-- MAIN USER VIEW -->
-    <div id="user-view" class="flex flex-col items-center justify-center my-auto space-y-6 w-full">
-        <div class="text-center">
-            <span class="text-xs uppercase text-slate-400 tracking-wider">Total Coins</span>
-            <div class="text-4xl font-extrabold text-cyan-400 mt-1">
-                ⚡ <span id="score">0</span>
+    <!-- MAIN USER CONTENT AREA -->
+    <div id="user-container" class="w-full my-auto space-y-4">
+
+        <!-- TAB 1: HAMSTER TAP GAME -->
+        <div id="tab-tap" class="tab-page flex flex-col items-center justify-center space-y-5">
+            <div class="text-center">
+                <span class="text-xs uppercase text-slate-400 tracking-wider">Total Balance</span>
+                <div class="text-4xl font-extrabold text-yellow-400 mt-1 flex items-center justify-center gap-2">
+                    <span>🥔</span> <span id="score">0</span>
+                </div>
+            </div>
+
+            <!-- Tap Potato Button -->
+            <button id="tap-btn" class="tap-btn relative w-52 h-52 rounded-full bg-gradient-to-tr from-purple-600 via-slate-800 to-yellow-500 p-2 shadow-2xl border-4 border-yellow-400/40 outline-none flex items-center justify-center">
+                <div class="w-full h-full rounded-full bg-slate-900 flex flex-col items-center justify-center border-2 border-slate-800 shadow-inner">
+                    <span class="text-7xl">🥔</span>
+                    <span class="mt-2 text-[10px] font-black text-yellow-400 tracking-widest uppercase">TAP TO MINE</span>
+                </div>
+            </button>
+
+            <!-- Energy Bar -->
+            <div class="w-full space-y-1">
+                <div class="flex justify-between text-xs font-bold">
+                    <span class="text-yellow-400">⚡ <span id="energy-text">1000 / 1000</span></span>
+                    <span class="text-cyan-400" id="pertap-text">+1 / tap</span>
+                </div>
+                <div class="w-full bg-slate-800 h-3 rounded-full overflow-hidden p-[2px] border border-slate-700">
+                    <div id="energy-bar" class="bg-gradient-to-r from-yellow-500 to-amber-300 h-full rounded-full transition-all duration-150" style="width: 100%"></div>
+                </div>
             </div>
         </div>
 
-        <!-- Big Tap Button -->
-        <button id="tap-btn" class="tap-btn relative w-56 h-56 rounded-full bg-gradient-to-tr from-purple-600 via-slate-800 to-cyan-500 p-2 shadow-2xl border-4 border-cyan-400/40 outline-none transition flex items-center justify-center">
-            <div class="w-full h-full rounded-full bg-slate-800 flex flex-col items-center justify-center border-2 border-slate-700 shadow-inner">
-                <span class="text-7xl">🥔</span>
-                <span class="mt-2 text-xs font-black text-cyan-400 tracking-widest uppercase">TAP TO EARN</span>
-            </div>
-        </button>
-
-        <!-- Energy Bar -->
-        <div class="w-full space-y-1">
-            <div class="flex justify-between text-xs font-bold">
-                <span class="text-yellow-400">⚡ <span id="energy-text">1000 / 1000</span></span>
-                <span class="text-slate-400">+1 per sec</span>
-            </div>
-            <div class="w-full bg-slate-800 h-3 rounded-full overflow-hidden p-[2px] border border-slate-700">
-                <div id="energy-bar" class="bg-gradient-to-r from-yellow-500 to-amber-300 h-full rounded-full transition-all duration-150" style="width: 100%"></div>
+        <!-- TAB 2: BLUM / TOMATO DROP GAME -->
+        <div id="tab-drop" class="tab-page hidden space-y-3 text-center">
+            <h2 class="text-xl font-bold text-white">🍅 Tomato Drop Game</h2>
+            <p class="text-xs text-slate-400">Tap falling items to earn +50 coins each!</p>
+            <div class="relative w-full h-72 bg-slate-900 rounded-2xl border border-slate-800 overflow-hidden flex items-center justify-center">
+                <canvas id="drop-canvas" class="absolute inset-0 w-full h-full"></canvas>
+                <div id="drop-overlay" class="relative z-10 space-y-3">
+                    <button onclick="startDropGame()" class="px-6 py-3 bg-red-500 text-white font-bold text-xs rounded-xl shadow-lg">START DROP GAME (30s)</button>
+                </div>
             </div>
         </div>
-    </div>
 
-    <!-- ADMIN PANEL VIEW -->
-    <div id="admin-view" class="hidden flex-col space-y-4 my-auto w-full">
-        <h2 class="text-xl font-bold text-cyan-400 border-b border-slate-800 pb-2">Master Control Panel</h2>
-        <div class="bg-slate-800 p-4 rounded-xl space-y-3 border border-slate-700">
-            <div>
-                <label class="text-xs text-slate-400">Coins Per Tap</label>
-                <input type="number" id="adm-pertap" value="1" class="w-full mt-1 bg-slate-900 border border-slate-700 rounded-lg p-2 text-xs text-white">
+        <!-- TAB 3: TASKS WALL -->
+        <div id="tab-tasks" class="tab-page hidden space-y-3">
+            <h2 class="text-xl font-bold text-white text-center">Task Center</h2>
+            <div class="bg-slate-800 p-4 rounded-xl border border-slate-700 flex justify-between items-center">
+                <div>
+                    <h4 class="font-bold text-sm">Daily Check-In</h4>
+                    <span class="text-xs text-yellow-400">+5,000 Coins Reward</span>
+                </div>
+                <button onclick="claimDaily()" class="px-4 py-2 bg-yellow-500 text-slate-900 font-extrabold text-xs rounded-xl">CLAIM</button>
             </div>
-            <div>
-                <label class="text-xs text-slate-400">Add Bonus Coins</label>
-                <input type="number" id="adm-addcoins" placeholder="e.g. 5000" class="w-full mt-1 bg-slate-900 border border-slate-700 rounded-lg p-2 text-xs text-white">
-            </div>
-            <button onclick="applyAdminSettings()" class="w-full py-2 bg-cyan-500 text-slate-900 font-extrabold text-xs rounded-lg">SAVE SETTINGS</button>
+            <div id="user-tasks-list" class="space-y-2"></div>
         </div>
-    </div>
 
-    <script>
-        const MASTER_ID = "7208905905";
-        let tg = window.Telegram ? window.Telegram.WebApp : null;
-        if (tg) { tg.expand(); tg.ready(); }
+        <!-- TAB 4: REFERRAL SQUAD -->
+        <div id="tab-friends" class="tab-page hidden space-y-3">
+            <h2 class="text-xl font-bold text-white text-center">Invite Squad</h2>
+            <div class="bg-slate-800 p-4 rounded-xl border border-slate-700 space-y-2">
+                <span class="text-xs text-slate-400 font-bold uppercase">Your Invite Link</span>
+                <input type="text" readonly id="ref-url" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-xs text-slate-300 font-mono">
+                <button onclick="copyRef()" class="w-full py-2 bg-purple-600 text-white font-bold text-xs rounded-xl">COPY REFERRAL LINK</button>
+            </div>
+        </div>
 
-        let coins = 0;
-        let energy = 1000;
-        let maxEnergy = 1000;
-        let perTap = 1;
-
-        // User Setup & Security Check
-        let currentUserId = "";
-        if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) {
-            document.getElementById('user-name').innerText = tg.initDataUnsafe.user.first_name;
-            currentUserId = String(tg.initDataUnsafe.user.id);
-        }
-
-        // Show Admin Button ONLY for your User ID
-        if (currentUserId === MASTER_ID || currentUserId === "") {
-            document.getElementById('admin-btn').classList.remove('hidden');
-        }
-
-        // Tap Mechanics
-        const tapBtn = document.getElementById('tap-btn');
-        function handleTap(e) {
-            if (e) e.preventDefault();
-            if (energy < perTap) return;
-
-            energy -= perTap;
-            coins += perTap;
-
-            updateUI();
-
-            let x = (e && e.clientX) ? e.clientX : (window.innerWidth / 2);
-            let y = (e && e.clientY) ? e.clientY : (window.innerHeight / 2);
-
-            let num = document.createElement('div');
-            num.className = 'floating-num';
-            num.innerText = '+' + perTap;
-            num.style.left = (x - 15) + 'px';
-            num.style.top = (y - 30) + 'px';
-            document.body.appendChild(num);
-            setTimeout(() => num.remove(), 600);
-        }
-
-        tapBtn.addEventListener('click', handleTap);
-
-        function updateUI() {
-            document.getElementById('score').innerText = coins;
-            document.getElementById('energy-text').innerText = energy + ' / ' + maxEnergy;
-            document.getElementById('energy-bar').style.width = ((energy / maxEnergy) * 100) + '%';
-        }
-
-        // Energy Auto-Recharge
-        setInterval(() => {
-            if (energy < maxEnergy) {
-                energy = Math.min(maxEnergy, energy + 1);
-                updateUI();
-            }
-        }, 1000);
-
-        // Admin Toggle
-        function toggleAdminView() {
-            let u = document.getElementById('user-view');
-            let a = document.getElementById('admin-view');
-            u.classList.toggle('hidden');
-            a.classList.toggle('flex');
-            a.classList.toggle('hidden');
-        }
-
-        function applyAdminSettings() {
-            let pt = parseInt(document.getElementById('adm-pertap').value);
-            let ac = parseInt(document.getElementById('adm-addcoins').value);
-            if (pt > 0) perTap = pt;
-            if (ac > 0) coins += ac;
-            updateUI();
-            toggleAdminView();
-        }
-    </script>
-</body>
-</html>
+        <!-- TAB 5: TON WEB3 WALLET -->
+        <div id="tab-wallet" class="tab-page hidden space-y-4 text-center">
+            <h2 class="text-xl font-bold text-white">TON Web3 Airdrop</h2>
+            <div class="bg-slate-800 p-5 rounded-2xl border
+                

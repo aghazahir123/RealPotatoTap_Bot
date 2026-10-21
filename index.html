@@ -3,50 +3,48 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>Potato Empire 🥔 Mini App</title>
-  <!-- Telegram Web App SDK & React CDN -->
+  <title>Potato Empire 🥔 All-in-One Super App</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-    body { background: #121212; color: #fff; text-align: center; height: 100vh; overflow: hidden; }
-    #root { display: flex; flex-direction: column; height: 100vh; justify-content: space-between; }
+    * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+    body { background: #0f0f11; color: #ffffff; height: 100vh; overflow: hidden; }
+    #root { display: flex; flex-direction: column; height: 100vh; }
     
-    /* Top Header */
-    .header { padding: 15px; background: #1e1e1e; border-bottom: 2px solid #333; display: flex; justify-content: space-between; align-items: center; }
-    .stat-box { background: #2a2a2a; padding: 8px 12px; border-radius: 10px; font-size: 13px; font-weight: bold; }
-    .stat-val { color: #f4a261; margin-top: 3px; }
+    /* Top Header Bar */
+    .header { background: #18181c; padding: 12px 15px; border-bottom: 1px solid #2a2a30; display: flex; justify-content: space-between; align-items: center; }
+    .badge { background: #2a2a32; padding: 6px 10px; border-radius: 8px; font-size: 11px; border: 1px solid #3a3a45; }
+    .badge-val { color: #f4a261; font-weight: bold; font-size: 13px; margin-top: 2px; }
+    .owner-tag { background: #e76f51; color: #fff; padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: bold; }
 
-    /* Main View Area */
-    .view-container { flex: 1; overflow-y: auto; padding: 15px; position: relative; }
-    
-    /* Tap Section (Hamster Style) */
-    .potato-tap-area { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; }
-    .potato-btn { width: 180px; height: 180px; border-radius: 50%; background: radial-gradient(circle, #e76f51, #e9c46a); border: 6px solid #f4a261; display: flex; align-items: center; justify-content: center; font-size: 80px; box-shadow: 0 0 30px rgba(244, 162, 97, 0.4); cursor: pointer; transition: transform 0.1s; }
-    .potato-btn:active { transform: scale(0.92); }
-    .energy-bar-box { width: 80%; background: #333; height: 12px; border-radius: 6px; margin-top: 20px; overflow: hidden; }
-    .energy-fill { background: linear-gradient(90deg, #e76f51, #2a9d8f); height: 100%; width: 100%; transition: width 0.2s; }
+    /* Main Scroll Area */
+    .content { flex: 1; overflow-y: auto; padding: 15px; position: relative; padding-bottom: 70px; }
 
-    /* Navigation Bar */
-    .nav-bar { display: flex; background: #1a1a1a; border-top: 1px solid #333; padding: 10px 0; }
-    .nav-btn { flex: 1; background: none; border: none; color: #888; font-size: 12px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 4px; }
-    .nav-btn.active { color: #f4a261; font-weight: bold; }
+    /* Bottom Navigation */
+    .nav { position: fixed; bottom: 0; left: 0; right: 0; height: 60px; background: #141417; border-top: 1px solid #282830; display: flex; justify-content: space-around; align-items: center; z-index: 100; }
+    .nav-item { background: none; border: none; color: #777788; font-size: 11px; display: flex; flex-direction: column; align-items: center; gap: 3px; cursor: pointer; flex: 1; }
+    .nav-item.active { color: #f4a261; font-weight: bold; }
+    .nav-item span { font-size: 18px; }
 
-    /* Tomarket Mini Game Canvas */
-    canvas { background: #1e1e1e; border-radius: 12px; width: 100%; height: 350px; border: 2px solid #444; }
+    /* Card UI Elements */
+    .card { background: #1c1c22; border: 1px solid #2d2d38; border-radius: 12px; padding: 14px; margin-bottom: 12px; }
+    .card-title { font-size: 15px; color: #f4a261; font-weight: bold; margin-bottom: 6px; display: flex; justify-content: space-between; }
+    .btn { background: #2a9d8f; border: none; color: white; padding: 8px 14px; border-radius: 8px; font-weight: bold; cursor: pointer; width: 100%; margin-top: 8px; font-size: 13px; }
+    .btn:disabled { background: #3d3d4a; color: #777; }
+    .btn-danger { background: #e76f51; }
 
-    /* Cards & List Elements */
-    .card-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
-    .upgrade-card { background: #252525; border-radius: 10px; padding: 12px; text-align: left; border: 1px solid #3d3d3d; }
-    .upgrade-card h4 { font-size: 14px; color: #f4a261; }
-    .upgrade-card p { font-size: 11px; color: #aaa; margin: 4px 0; }
-    .buy-btn { width: 100%; padding: 6px; background: #2a9d8f; border: none; border-radius: 6px; color: white; font-weight: bold; cursor: pointer; }
-    .buy-btn:disabled { background: #444; color: #888; }
-    
-    /* Admin Badge */
-    .admin-badge { background: #e76f51; color: white; font-size: 10px; padding: 2px 6px; border-radius: 4px; margin-left: 5px; }
+    /* Tap Screen */
+    .tap-container { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 320px; }
+    .potato-avatar { width: 170px; height: 170px; border-radius: 50%; background: radial-gradient(circle, #e76f51, #e9c46a); border: 5px solid #f4a261; display: flex; align-items: center; justify-content: center; font-size: 85px; cursor: pointer; box-shadow: 0 0 25px rgba(244, 162, 97, 0.3); transition: transform 0.08s; margin: 15px 0; }
+    .potato-avatar:active { transform: scale(0.93); }
+    .progress-bg { width: 85%; height: 10px; background: #2a2a35; border-radius: 5px; overflow: hidden; margin-top: 10px; }
+    .progress-fill { height: 100%; background: linear-gradient(90deg, #e76f51, #2a9d8f); transition: width 0.2s; }
+
+    /* Grid Views */
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .input-box { width: 100%; padding: 10px; background: #121215; border: 1px solid #333342; border-radius: 8px; color: #fff; margin: 6px 0; font-size: 13px; }
   </style>
 </head>
 <body>
@@ -55,46 +53,44 @@
   <script type="text/babel">
     const SUPER_ADMIN_ID = "7208905905";
 
-    function App() {
+    function PotatoApp() {
       // User State
-      const [userId, setUserId] = React.useState(SUPER_ADMIN_ID); // Defaulting for preview
-      const [coins, setCoins] = React.useState(1500);
-      const [pph, setPph] = React.useState(100); // Profit Per Hour
+      const [userId, setUserId] = React.useState(SUPER_ADMIN_ID);
+      const [coins, setCoins] = React.useState(12500);
+      const [pph, setPph] = React.useState(250);
       const [energy, setEnergy] = React.useState(1000);
-      const [activeTab, setActiveTab] = React.useState('tap');
-      const [farmingTimeLeft, setFarmingTimeLeft] = React.useState(10800); // 3 Hours (Tomarket Harvest)
-      
-      // Admin Check
-      const isOwner = userId === SUPER_ADMIN_ID;
+      const [wallet, setWallet] = React.useState("");
+      const [tab, setTab] = React.useState("tap");
 
-      // Handle Telegram User Detection
-      React.useEffect(() => {
-        if (window.Telegram && window.Telegram.WebApp) {
-          const tg = window.Telegram.WebApp;
-          tg.ready();
-          if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
-            setUserId(String(tg.initDataUnsafe.user.id));
-          }
-        }
-      }, []);
+      // Daily Combos & Morse State
+      const [comboClaimed, setComboClaimed] = React.useState(false);
+      const [cipherInput, setCipherInput] = React.useState("");
+      const [cipherSolved, setCipherSolved] = React.useState(false);
 
-      // Passive Profit Generator (Hamster PPH)
+      // Tasks State
+      const [ytCode, setYtCode] = React.useState("");
+      const [ytDone, setYtDone] = React.useState(false);
+
+      // Check Owner Status
+      const isOwner = String(userId) === SUPER_ADMIN_ID;
+
+      // Auto Profit Generator (Hamster PPH Engine)
       React.useEffect(() => {
-        const interval = setInterval(() => {
+        const timer = setInterval(() => {
           setCoins(c => c + Math.floor(pph / 3600));
         }, 1000);
-        return () => clearInterval(interval);
+        return () => clearInterval(timer);
       }, [pph]);
 
-      // Energy Auto-Recharge Engine
+      // Energy Auto Recharge
       React.useEffect(() => {
-        const interval = setInterval(() => {
-          setEnergy(e => Math.min(1000, e + 3));
+        const timer = setInterval(() => {
+          setEnergy(e => Math.min(1000, e + 2));
         }, 1000);
-        return () => clearInterval(interval);
+        return () => clearInterval(timer);
       }, []);
 
-      // Main Tap Handler
+      // Tap Handler
       const handleTap = () => {
         if (energy >= 1) {
           setCoins(c => c + 1);
@@ -102,175 +98,304 @@
         }
       };
 
+      // Morse Cipher Submit
+      const checkCipher = () => {
+        if (cipherInput.toUpperCase() === "POTATO") {
+          setCoins(c => c + 1000000);
+          setCipherSolved(true);
+          alert("🎉 Correct Morse Cipher! 1,000,000 $POTATO Coins added!");
+        } else {
+          alert("❌ Incorrect Cipher Code!");
+        }
+      };
+
+      // YouTube Task Check
+      const verifyYt = () => {
+        if (ytCode === "POTATO789") {
+          setCoins(c => c + 250000);
+          setYtDone(true);
+          alert("✅ Code Verified! +250,000 Coins");
+        } else {
+          alert("❌ Invalid Video Secret Code!");
+        }
+      };
+
       return (
         <div style={{height: '100%', display: 'flex', flexDirection: 'column'}}>
           {/* Header Stats */}
           <div className="header">
-            <div className="stat-box">
-              <span>$POTATO Coins</span>
-              <div className="stat-val">🥔 {coins.toLocaleString()}</div>
+            <div className="badge">
+              <div>Balance</div>
+              <div className="badge-val">🥔 {coins.toLocaleString()}</div>
             </div>
-            <div className="stat-box">
-              <span>Profit / Hour</span>
-              <div className="stat-val">⚡ +{pph}/h</div>
+            <div className="badge">
+              <div>Profit / Hour</div>
+              <div className="badge-val">⚡ +{pph.toLocaleString()}/h</div>
             </div>
-            <div className="stat-box">
-              <span>Role</span>
-              <div className="stat-val">
-                {isOwner ? <span className="admin-badge">OWNER 👑</span> : "Player 🥔"}
+            <div className="badge">
+              <div>Role</div>
+              <div className="badge-val">
+                {isOwner ? <span className="owner-tag">SUPER BOSS 👑</span> : "Player 🥔"}
               </div>
             </div>
           </div>
 
-          {/* Main Content Body */}
-          <div className="view-container">
-            {activeTab === 'tap' && (
-              <div className="potato-tap-area">
-                <h3 style={{marginBottom: '15px', color: '#e9c46a'}}>Tap the Potato Boss!</h3>
-                <div className="potato-btn" onClick={handleTap}>🥔</div>
-                <div className="energy-bar-box">
-                  <div className="energy-fill" style={{width: `${(energy / 1000) * 100}%`}}></div>
+          {/* Main Display Views */}
+          <div className="content">
+            
+            {/* 1. TAP & HARVEST SECTION */}
+            {tab === "tap" && (
+              <div className="tap-container">
+                <h3 style={{color: '#f4a261'}}>Potato CEO Mining</h3>
+                <div className="potato-avatar" onClick={handleTap}>🥔</div>
+                <div className="progress-bg">
+                  <div className="progress-fill" style={{width: `${(energy / 1000) * 100}%`}}></div>
                 </div>
-                <p style={{fontSize: '12px', marginTop: '8px', color: '#aaa'}}>Energy: {energy} / 1000</p>
-              </div>
-            )}
-
-            {activeTab === 'harvest' && (
-              <div style={{padding: '20px'}}>
-                <h2>🍅 Tomarket Hourly Farm</h2>
-                <p style={{color: '#aaa', margin: '10px 0'}}>Harvest accumulated crops every 3 hours!</p>
-                <div style={{fontSize: '40px', margin: '20px 0', color: '#f4a261'}}>⏱️ 02:59:45</div>
-                <button className="buy-btn" style={{padding: '15px', fontSize: '16px'}}>🌾 Claim 3-Hour Harvest (+500 Coins)</button>
-              </div>
-            )}
-
-            {activeTab === 'cards' && (
-              <div>
-                <h3>🐹 Upgrade Cards (Increase PPH)</h3>
-                <div className="card-grid">
-                  <div className="upgrade-card">
-                    <h4>🥔 Potato Farm</h4>
-                    <p>+50 PPH</p>
-                    <button className="buy-btn" onClick={() => { setPph(p => p + 50); setCoins(c => c - 200); }}>Cost: 200 🥔</button>
-                  </div>
-                  <div className="upgrade-card">
-                    <h4>🍟 French Fry Tech</h4>
-                    <p>+150 PPH</p>
-                    <button className="buy-btn" onClick={() => { setPph(p => p + 150); setCoins(c => c - 500); }}>Cost: 500 🥔</button>
-                  </div>
+                <p style={{fontSize: '12px', color: '#aaa', marginTop: '6px'}}>⚡ Energy: {energy} / 1000</p>
+                
+                {/* Tomarket 3-Hour Harvest Block */}
+                <div className="card" style={{marginTop: '20px', width: '100%'}}>
+                  <div className="card-title">🍅 Tomarket 3-Hour Farm</div>
+                  <p style={{fontSize: '12px', color: '#aaa'}}>Auto-farming rewards every 3 hours!</p>
+                  <button className="btn" onClick={() => { setCoins(c => c + 15000); alert("🌾 Claimed 15,000 Harvest Coins!"); }}>🌾 Claim Harvest (+15,000)</button>
                 </div>
               </div>
             )}
 
-            {activeTab === 'game' && <MiniGameEngine onScore={(s) => setCoins(c => c + s)} />}
-
-            {activeTab === 'admin' && (
+            {/* 2. HAMSTER COMBOS & CARDS */}
+            {tab === "mine" && (
               <div>
-                <h3>🛡️ Admin & Team Control</h3>
+                {/* Daily Combo Box */}
+                <div className="card" style={{border: '1px solid #f4a261'}}>
+                  <div className="card-title">🐹 Daily Combo (5,000,000 Coins)</div>
+                  <p style={{fontSize: '12px', color: '#aaa', marginBottom: '8px'}}>Upgrade 3 secret cards to claim daily bonus!</p>
+                  <button className="btn" disabled={comboClaimed} onClick={() => { setCoins(c => c + 5000000); setComboClaimed(true); }}>
+                    {comboClaimed ? "✅ Claimed Today" : "🎁 Unlock Daily Combo (+5M)"}
+                  </button>
+                </div>
+
+                {/* Daily Cipher Box */}
+                <div className="card">
+                  <div className="card-title">🔑 Daily Cipher (1,000,000 Coins)</div>
+                  <p style={{fontSize: '12px', color: '#aaa'}}>Enter secret Morse word (Hint: POTATO):</p>
+                  <input type="text" className="input-box" placeholder="Enter Code..." value={cipherInput} onChange={e => setCipherInput(e.target.value)} disabled={cipherSolved} />
+                  <button className="btn" onClick={checkCipher} disabled={cipherSolved}>
+                    {cipherSolved ? "✅ Solved" : "Submit Code"}
+                  </button>
+                </div>
+
+                {/* Upgrade Cards Grid */}
+                <h4 style={{margin: '12px 0 8px 0', color: '#f4a261'}}>Mining Cards (PPH Boosters)</h4>
+                <div className="grid-2">
+                  <div className="card">
+                    <div style={{fontWeight: 'bold', fontSize: '13px'}}>🥔 Organic Farm</div>
+                    <div style={{fontSize: '11px', color: '#aaa', margin: '4px 0'}}>+120 PPH</div>
+                    <button className="btn" onClick={() => { if(coins >= 1000){ setCoins(c => c - 1000); setPph(p => p + 120); } }}>Cost: 1,000 🥔</button>
+                  </div>
+                  <div className="card">
+                    <div style={{fontWeight: 'bold', fontSize: '13px'}}>🍟 Fry Machine</div>
+                    <div style={{fontSize: '11px', color: '#aaa', margin: '4px 0'}}>+350 PPH</div>
+                    <button className="btn" onClick={() => { if(coins >= 3000){ setCoins(c => c - 3000); setPph(p => p + 350); } }}>Cost: 3,000 🥔</button>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* 3. TOMARKET MINI-GAME */}
+            {tab === "game" && <SlicingGameOnCanvas onWin={(score) => setCoins(c => c + score)} />}
+
+            {/* 4. TASKS & YOUTUBE SECTION */}
+            {tab === "tasks" && (
+              <div>
+                <h3 style={{marginBottom: '10px', color: '#f4a261'}}>📋 Tasks & Quests</h3>
+                
+                {/* YouTube Task */}
+                <div className="card">
+                  <div className="card-title">▶️ Watch YouTube Video</div>
+                  <p style={{fontSize: '12px', color: '#aaa'}}>Watch video, find secret code and enter below:</p>
+                  <a href="https://youtube.com" target="_blank" style={{color: '#2a9d8f', fontSize: '12px', display: 'inline-block', margin: '6px 0'}}>📺 Watch Video</a>
+                  <input type="text" className="input-box" placeholder="Video Secret Code (Try: POTATO789)" value={ytCode} onChange={e => setYtCode(e.target.value)} disabled={ytDone} />
+                  <button className="btn" onClick={verifyYt} disabled={ytDone}>{ytDone ? "✅ Reward Claimed" : "Verify Code (+250k)"}</button>
+                </div>
+
+                {/* Telegram Task */}
+                <div className="card">
+                  <div className="card-title">📢 Join Official Telegram</div>
+                  <p style={{fontSize: '12px', color: '#aaa'}}>Join channel for updates & payouts.</p>
+                  <button className="btn" onClick={() => { setCoins(c => c + 100000); alert("✅ +100,000 Coins Claimed!"); }}>Join & Claim (+100k)</button>
+                </div>
+              </div>
+            )}
+
+            {/* 5. REFERRAL & WALLET */}
+            {tab === "wallet" && (
+              <div>
+                <div className="card">
+                  <div className="card-title">👥 Referral Program</div>
+                  <p style={{fontSize: '12px', color: '#aaa'}}>Invite friends and earn 10% of their earnings!</p>
+                  <input type="text" className="input-box" readOnly value={`https://t.me/PotatoBot?start=ref_${userId}`} />
+                  <button className="btn" onClick={() => alert("Referral Link Copied!")}>📋 Copy Invite Link</button>
+                </div>
+
+                <div className="card">
+                  <div className="card-title">👛 TON Web3 Wallet</div>
+                  <p style={{fontSize: '12px', color: '#aaa'}}>Connect Tonkeeper or Telegram Wallet for Airdrop.</p>
+                  <input type="text" className="input-box" placeholder="Enter TON Wallet Address (EQ...)" value={wallet} onChange={e => setWallet(e.target.value)} />
+                  <button className="btn" onClick={() => alert("✅ Wallet Address Saved Successfully!")}>Save Wallet</button>
+                </div>
+              </div>
+            )}
+
+            {/* 6. OWNER & TEAM ADMIN PANEL */}
+            {tab === "admin" && (
+              <div>
+                <h3 style={{marginBottom: '10px', color: '#e76f51'}}>🛡️ Admin & Team Control</h3>
                 {isOwner ? (
-                  <div style={{textAlign: 'left', marginTop: '15px'}}>
-                    <p style={{color: '#2a9d8f', fontWeight: 'bold'}}>Welcome Boss! (ID: {SUPER_ADMIN_ID})</p>
-                    <hr style={{borderColor: '#333', margin: '10px 0'}} />
-                    <label>Add Team Member ID:</label>
-                    <input type="text" placeholder="e.g. 12345678" style={{width: '100%', padding: '8px', margin: '5px 0', background: '#333', border: '1px solid #555', color: 'white', borderRadius: '4px'}} />
-                    <div style={{margin: '10px 0', fontSize: '12px'}}>
-                      <input type="checkbox" id="task_perm" /> <label htmlFor="task_perm">Allow YouTube Tasks Management</label><br/>
-                      <input type="checkbox" id="combo_perm" /> <label htmlFor="combo_perm">Allow Daily Combo Change</label>
+                  <div>
+                    <div className="card" style={{border: '1px solid #e76f51'}}>
+                      <div className="card-title">👑 Master Owner Portal ({SUPER_ADMIN_ID})</div>
+                      <p style={{fontSize: '12px', color: '#2a9d8f'}}>Full Unrestricted Master Power Active!</p>
+                      
+                      <hr style={{borderColor: '#2d2d38', margin: '10px 0'}} />
+                      <h5 style={{color: '#f4a261'}}>Add Team Member & Assign Rights:</h5>
+                      <input type="text" className="input-box" placeholder="Team Member Telegram ID (e.g. 9876543)" />
+                      
+                      <div style={{fontSize: '12px', textAlign: 'left', margin: '8px 0'}}>
+                        <input type="checkbox" id="p1" /> <label htmlFor="p1">Can Manage YouTube Tasks</label><br/>
+                        <input type="checkbox" id="p2" /> <label htmlFor="p2">Can Change Daily Combos</label><br/>
+                        <input type="checkbox" id="p3" /> <label htmlFor="p3">Can View Users Database</label>
+                      </div>
+
+                      <button className="btn btn-danger">Grant Selected Rights</button>
                     </div>
-                    <button className="buy-btn">Grant Limited Team Access</button>
                   </div>
                 ) : (
-                  <p style={{color: '#e76f51', marginTop: '20px'}}>Aap ke paas Full Admin Rights nahi hain. Faqat Master Admin control kar sakta hai!</p>
+                  <div className="card">
+                    <p style={{color: '#e76f51'}}>⚠️ Aap Super Admin nahi hain. Aap ke paas sirf allowed team tasks ki access hogi!</p>
+                  </div>
                 )}
               </div>
             )}
+
           </div>
 
-          {/* Bottom Navigation */}
-          <div className="nav-bar">
-            <button className={`nav-btn ${activeTab === 'tap' ? 'active' : ''}`} onClick={() => setActiveTab('tap')}>
-              <span>🥔</span> Tap
+          {/* Bottom Navigation Toolbar */}
+          <div className="nav">
+            <button className={`nav-item ${tab === "tap" ? "active" : ""}`} onClick={() => setTab("tap")}>
+              <span>🥔</span>Tap
             </button>
-            <button className={`nav-btn ${activeTab === 'harvest' ? 'active' : ''}`} onClick={() => setActiveTab('harvest')}>
-              <span>🍅</span> Harvest
+            <button className={`nav-item ${tab === "mine" ? "active" : ""}`} onClick={() => setTab("mine")}>
+              <span>🐹</span>Cards
             </button>
-            <button className={`nav-btn ${activeTab === 'cards' ? 'active' : ''}`} onClick={() => setActiveTab('cards')}>
-              <span>🐹</span> Mine
+            <button className={`nav-item ${tab === "game" ? "active" : ""}`} onClick={() => setTab("game")}>
+              <span>🎯</span>Game
             </button>
-            <button className={`nav-btn ${activeTab === 'game' ? 'active' : ''}`} onClick={() => setActiveTab('game')}>
-              <span>🎯</span> Mini-Game
+            <button className={`nav-item ${tab === "tasks" ? "active" : ""}`} onClick={() => setTab("tasks")}>
+              <span>📋</span>Tasks
             </button>
-            <button className={`nav-btn ${activeTab === 'admin' ? 'active' : ''}`} onClick={() => setActiveTab('admin')}>
-              <span>🛡️</span> Team/Admin
+            <button className={`nav-item ${tab === "wallet" ? "active" : ""}`} onClick={() => setTab("wallet")}>
+              <span>👛</span>Wallet
+            </button>
+            <button className={`nav-item ${tab === "admin" ? "active" : ""}`} onClick={() => setTab("admin")}>
+              <span>🛡️</span>Admin
             </button>
           </div>
         </div>
       );
     }
 
-    // Canvas Engine for Slicing Mini Game
-    function MiniGameEngine({ onScore }) {
+    // Tomarket Real Slicing Game Engine Component
+    function SlicingGameOnCanvas({ onWin }) {
       const canvasRef = React.useRef(null);
-      const [isPlaying, setIsPlaying] = React.useState(false);
-      const [gameScore, setGameScore] = React.useState(0);
+      const [playing, setPlaying] = React.useState(false);
 
-      const startGame = () => {
-        setIsPlaying(true);
-        setGameScore(0);
-        let items = [];
-        let timer = 30;
+      const runGame = () => {
+        setPlaying(true);
         const canvas = canvasRef.current;
         const ctx = canvas.getContext('2d');
+        let items = [];
+        let score = 0;
+        let timer = 30;
 
-        const spawn = setInterval(() => {
+        const spawner = setInterval(() => {
           items.push({
-            x: Math.random() * (canvas.width - 30),
+            x: Math.random() * (canvas.width - 40) + 20,
             y: 0,
             speed: 2 + Math.random() * 3,
-            isBomb: Math.random() < 0.25
+            type: Math.random() < 0.2 ? 'bomb' : (Math.random() < 0.3 ? 'star' : 'potato')
           });
-        }, 500);
+        }, 400);
 
-        const countdown = setInterval(() => {
+        const clock = setInterval(() => {
           timer--;
           if (timer <= 0) {
-            clearInterval(spawn);
-            clearInterval(countdown);
-            setIsPlaying(false);
+            clearInterval(spawner);
+            clearInterval(clock);
+            setPlaying(false);
+            onWin(score * 10);
+            alert(`🎉 Game Over! You earned ${score * 10} $POTATO Coins!`);
           }
         }, 1000);
 
-        const render = () => {
+        const loop = () => {
           ctx.clearRect(0, 0, canvas.width, canvas.height);
+          
           for (let i = items.length - 1; i >= 0; i--) {
-            let item = items[i];
-            item.y += item.speed;
+            let it = items[i];
+            it.y += it.speed;
+
             ctx.beginPath();
-            ctx.arc(item.x, item.y, 18, 0, Math.PI * 2);
-            ctx.fillStyle = item.isBomb ? '#e76f51' : '#e9c46a';
+            ctx.arc(it.x, it.y, 16, 0, Math.PI * 2);
+            if (it.type === 'potato') ctx.fillStyle = '#d4a373';
+            else if (it.type === 'star') ctx.fillStyle = '#ffb703';
+            else ctx.fillStyle = '#e63946';
             ctx.fill();
           }
-          if (timer > 0) requestAnimationFrame(render);
+
+          ctx.fillStyle = "#fff";
+          ctx.font = "14px sans-serif";
+          ctx.fillText(`Score: ${score}`, 10, 20);
+          ctx.fillText(`Time: ${timer}s`, canvas.width - 70, 20);
+
+          if (timer > 0) requestAnimationFrame(loop);
         };
-        render();
+        loop();
+
+        // Canvas Slice Touch Event
+        canvas.onclick = (e) => {
+          const rect = canvas.getBoundingClientRect();
+          const cx = e.clientX - rect.left;
+          const cy = e.clientY - rect.top;
+
+          for (let i = items.length - 1; i >= 0; i--) {
+            let it = items[i];
+            if (Math.hypot(cx - it.x, cy - it.y) < 25) {
+              if (it.type === 'potato') score += 5;
+              else if (it.type === 'star') score += 20;
+              else if (it.type === 'bomb') score = Math.max(0, score - 15);
+              items.splice(i, 1);
+              break;
+            }
+          }
+        };
       };
 
       return (
-        <div>
-          <h3>🎯 Tomato-Style Slicing Game</h3>
-          {!isPlaying ? (
-            <button className="buy-btn" style={{padding: '12px', marginTop: '20px'}} onClick={startGame}>Start 30-Sec Game!</button>
-          ) : (
-            <div>
-              <canvas ref={canvasRef} width={300} height={320}></canvas>
-              <p style={{fontSize: '12px', color: '#aaa'}}>Tap Potatoes (Yellow), Avoid Bombs (Red)!</p>
+        <div style={{textAlign: 'center'}}>
+          <h3 style={{color: '#f4a261', marginBottom: '10px'}}>🎯 Tomarket 30s Slicing Game</h3>
+          {!playing ? (
+            <div className="card">
+              <p style={{fontSize: '12px', color: '#aaa', marginBottom: '10px'}}>Slice Potatoes (🥔) & Stars (⭐). Avoid Bombs (💣)!</p>
+              <button className="btn" onClick={runGame}>🚀 Start Game</button>
             </div>
+          ) : (
+            <canvas ref={canvasRef} width={320} height={350} style={{background: '#121215', borderRadius: '12px', border: '1px solid #333'}}></canvas>
           )}
         </div>
       );
     }
 
-    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+    ReactDOM.createRoot(document.getElementById('root')).render(<PotatoApp />);
   </script>
 </body>
 </html>

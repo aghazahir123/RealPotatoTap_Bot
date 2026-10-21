@@ -13,33 +13,27 @@
     body { background: #0b0b0e; color: #ffffff; height: 100vh; overflow: hidden; }
     #root { display: flex; flex-direction: column; height: 100vh; }
     
-    /* Role Switcher Bar */
     .sim-bar { background: #1f1f28; padding: 6px 12px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #333344; font-size: 11px; }
     .sim-btn { background: #e76f51; border: none; color: white; padding: 3px 8px; border-radius: 4px; font-weight: bold; cursor: pointer; }
 
-    /* Top Header Bar */
     .header { background: #141419; padding: 10px 14px; border-bottom: 1px solid #262632; display: flex; justify-content: space-between; align-items: center; }
     .badge { background: #20202a; padding: 5px 9px; border-radius: 8px; font-size: 10px; border: 1px solid #323242; }
     .badge-val { color: #f4a261; font-weight: bold; font-size: 12px; margin-top: 2px; }
     .owner-tag { background: #e76f51; color: #fff; padding: 2px 6px; border-radius: 4px; font-size: 9px; font-weight: bold; }
 
-    /* Main Scroll Area */
     .content { flex: 1; overflow-y: auto; padding: 14px; position: relative; padding-bottom: 70px; }
 
-    /* Bottom Navigation Toolbar */
     .nav { position: fixed; bottom: 0; left: 0; right: 0; height: 60px; background: #121216; border-top: 1px solid #262632; display: flex; justify-content: space-around; align-items: center; z-index: 100; }
     .nav-item { background: none; border: none; color: #6e6e82; font-size: 10px; display: flex; flex-direction: column; align-items: center; gap: 3px; cursor: pointer; flex: 1; }
     .nav-item.active { color: #f4a261; font-weight: bold; }
     .nav-item span { font-size: 18px; }
 
-    /* Cards UI Elements */
     .card { background: #181820; border: 1px solid #2b2b3a; border-radius: 12px; padding: 12px; margin-bottom: 10px; }
     .card-title { font-size: 14px; color: #f4a261; font-weight: bold; margin-bottom: 6px; display: flex; justify-content: space-between; }
     .btn { background: #2a9d8f; border: none; color: white; padding: 8px 12px; border-radius: 8px; font-weight: bold; cursor: pointer; width: 100%; margin-top: 6px; font-size: 12px; }
     .btn:disabled { background: #353545; color: #666; }
     .btn-danger { background: #e76f51; }
 
-    /* Tap Screen */
     .tap-container { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 280px; }
     .potato-avatar { width: 160px; height: 160px; border-radius: 50%; background: radial-gradient(circle, #e76f51, #e9c46a); border: 5px solid #f4a261; display: flex; align-items: center; justify-content: center; font-size: 80px; cursor: pointer; box-shadow: 0 0 25px rgba(244, 162, 97, 0.3); transition: transform 0.08s; margin: 12px 0; }
     .potato-avatar:active { transform: scale(0.92); }
@@ -57,7 +51,6 @@
     const SUPER_ADMIN_ID = "7208905905";
 
     function PotatoApp() {
-      // User State
       const [userId, setUserId] = React.useState(SUPER_ADMIN_ID);
       const [coins, setCoins] = React.useState(25000);
       const [pph, setPph] = React.useState(500);
@@ -65,25 +58,20 @@
       const [wallet, setWallet] = React.useState("");
       const [tab, setTab] = React.useState("tap");
 
-      // Daily Combos & Cipher
       const [comboClaimed, setComboClaimed] = React.useState(false);
       const [cipherInput, setCipherInput] = React.useState("");
       const [cipherSolved, setCipherSolved] = React.useState(false);
 
-      // Tasks State
-      const [ytCode, setYtCode] = React.value = React.useState("");
+      const [ytCode, setYtCode] = React.useState("");
       const [ytDone, setYtDone] = React.useState(false);
 
-      // Team Members Database State (Admin Panel)
       const [teamList, setTeamList] = React.useState([]);
       const [newTeamId, setNewTeamId] = React.useState("");
       const [permTasks, setPermTasks] = React.useState(true);
       const [permCombo, setPermCombo] = React.useState(false);
 
-      // Check Owner
       const isOwner = String(userId) === SUPER_ADMIN_ID;
 
-      // Auto Profit Generator
       React.useEffect(() => {
         const timer = setInterval(() => {
           setCoins(c => c + Math.floor(pph / 3600));
@@ -91,7 +79,6 @@
         return () => clearInterval(timer);
       }, [pph]);
 
-      // Energy Auto Recharge
       React.useEffect(() => {
         const timer = setInterval(() => {
           setEnergy(e => Math.min(1000, e + 3));
@@ -99,7 +86,6 @@
         return () => clearInterval(timer);
       }, []);
 
-      // Tap Handler
       const handleTap = () => {
         if (energy >= 1) {
           setCoins(c => c + 1);
@@ -107,7 +93,6 @@
         }
       };
 
-      // Morse Cipher Check
       const checkCipher = () => {
         if (cipherInput.toUpperCase() === "POTATO") {
           setCoins(c => c + 1000000);
@@ -118,7 +103,6 @@
         }
       };
 
-      // Add Team Member (Owner Function)
       const handleAddTeam = () => {
         if (!newTeamId) return alert("Please enter a valid Telegram ID!");
         setTeamList(prev => [...prev, { id: newTeamId, tasks: permTasks, combo: permCombo }]);
@@ -128,8 +112,6 @@
 
       return (
         <div style={{height: '100%', display: 'flex', flexDirection: 'column'}}>
-          
-          {/* Top Quick Role Switcher */}
           <div className="sim-bar">
             <span>Current Active ID: <strong>{userId}</strong></span>
             <button className="sim-btn" onClick={() => setUserId(userId === SUPER_ADMIN_ID ? "12345678" : SUPER_ADMIN_ID)}>
@@ -137,7 +119,6 @@
             </button>
           </div>
 
-          {/* Header Stats */}
           <div className="header">
             <div className="badge">
               <div>Balance</div>
@@ -155,10 +136,7 @@
             </div>
           </div>
 
-          {/* Main Display Views */}
           <div className="content">
-            
-            {/* 1. TAP & HARVEST */}
             {tab === "tap" && (
               <div className="tap-container">
                 <h3 style={{color: '#f4a261'}}>Potato CEO Mining</h3>
@@ -168,7 +146,6 @@
                 </div>
                 <p style={{fontSize: '11px', color: '#aaa', marginTop: '6px'}}>⚡ Energy: {energy} / 1000</p>
                 
-                {/* Tomarket 3-Hour Harvest Block */}
                 <div className="card" style={{marginTop: '15px', width: '100%'}}>
                   <div className="card-title">🍅 Tomarket 3-Hour Harvest</div>
                   <p style={{fontSize: '11px', color: '#aaa'}}>Auto-farming crops every 3 hours!</p>
@@ -177,7 +154,6 @@
               </div>
             )}
 
-            {/* 2. HAMSTER CARDS & COMBOS */}
             {tab === "mine" && (
               <div>
                 <div className="card" style={{border: '1px solid #f4a261'}}>
@@ -213,10 +189,8 @@
               </div>
             )}
 
-            {/* 3. TOMARKET MINI GAME */}
             {tab === "game" && <SlicingGameCanvas onWin={(s) => setCoins(c => c + s)} />}
 
-            {/* 4. TASKS SECTION */}
             {tab === "tasks" && (
               <div>
                 <h3 style={{marginBottom: '10px', color: '#f4a261'}}>📋 Tasks & Rewards</h3>
@@ -231,7 +205,6 @@
               </div>
             )}
 
-            {/* 5. WALLET & REFERRAL */}
             {tab === "wallet" && (
               <div>
                 <div className="card">
@@ -250,7 +223,6 @@
               </div>
             )}
 
-            {/* 6. ADMIN & TEAM CONTROL (WORKING NOW!) */}
             {tab === "admin" && (
               <div>
                 <h3 style={{marginBottom: '10px', color: '#e76f51'}}>🛡️ Owner & Team Panel</h3>
@@ -272,7 +244,6 @@
                         <button className="btn btn-danger" onClick={handleAddTeam}>Grant Restricted Rights</button>
                       </div>
 
-                      {/* Active Team Members List */}
                       <div>
                         <h5 style={{color: '#fff', margin: '8px 0'}}>Current Team Members ({teamList.length}):</h5>
                         {teamList.length === 0 ? (
@@ -294,10 +265,8 @@
                 )}
               </div>
             )}
-
           </div>
 
-          {/* Navigation Bar */}
           <div className="nav">
             <button className={`nav-item ${tab === "tap" ? "active" : ""}`} onClick={() => setTab("tap")}>
               <span>🥔</span>Tap
@@ -322,7 +291,6 @@
       );
     }
 
-    // Tomarket Real Slicing Game Engine
     function SlicingGameCanvas({ onWin }) {
       const canvasRef = React.useRef(null);
       const [playing, setPlaying] = React.useState(false);
@@ -379,7 +347,6 @@
         };
         loop();
 
-        // Canvas Slice Click Event
         canvas.onclick = (e) => {
           const rect = canvas.getBoundingClientRect();
           const cx = e.clientX - rect.left;
@@ -400,4 +367,20 @@
 
       return (
         <div style={{textAlign: 'center'}}>
-          <h3 style={{color: '#f4a261', marginBottom: '8px'}}>🎯 Tomarket 30s 
+          <h3 style={{color: '#f4a261', marginBottom: '8px'}}>🎯 Tomarket 30s Slicing Game</h3>
+          {!playing ? (
+            <div className="card">
+              <p style={{fontSize: '11px', color: '#aaa', marginBottom: '8px'}}>Slice Potatoes (🥔) & Stars (⭐). Avoid Bombs (💣)!</p>
+              <button className="btn" onClick={runGame}>🚀 Start Game</button>
+            </div>
+          ) : (
+            <canvas ref={canvasRef} width={300} height={320} style={{background: '#121215', borderRadius: '12px', border: '1px solid #333'}}></canvas>
+          )}
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<PotatoApp />);
+  </script>
+</body>
+</html>

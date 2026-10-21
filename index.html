@@ -20,3 +20,152 @@ const userSchema = new mongoose.Schema({
 });
 
 module.exports = mongoose.model('User', userSchema);
+<!-- Mini-Game Component (React / HTML Engine) -->
+<div id="game-container" style="position: relative; width: 100%; height: 400px; background: #1a1a1a;">
+  <canvas id="gameCanvas" width="360" height="400"></canvas>
+</div>
+
+<script>
+const canvas = document.getElementById('gameCanvas');
+const ctx = canvas.getContext('2d');
+
+let score = 0;
+let timeLeft = 30;
+let items = [];
+
+// Game Items: Potato (+10), Golden Star (+50), Bomb (-20 / Penalty)
+function spawnItem() {
+  const types = ['potato', 'potato', 'potato', 'star', 'bomb'];
+  const type = types[Math.floor(Math.random() * types.length)];
+  items.push({
+    x: Math.random() * (canvas.width - 40),
+    y: 0,
+    speed: 2 + Math.random() * 3,
+    type: type,
+    radius: 20
+  });
+}
+
+function updateGame() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  
+  // Render & Move Items
+  for (let i = items.length - 1; i >= 0; i--) {
+    let item = items[i];
+    item.y += item.speed;
+    
+    // Draw Item
+    ctx.beginPath();
+    ctx.arc(item.x, item.y, item.radius, 0, Math.PI * 2);
+    if (item.type === 'potato') ctx.fillStyle = '#d4a373'; // Potato Color
+    else if (item.type === 'star') ctx.fillStyle = '#ffb703'; // Star Gold
+    else ctx.fillStyle = '#e63946'; // Bomb Red
+    ctx.fill();
+
+    // Check bottom boundary
+    if (item.y > canvas.height) items.splice(i, 1);
+  }
+
+  // Draw Score & Timer
+  ctx.fillStyle = '#fff';
+  ctx.font = '16px Arial';
+  ctx.fillText(`Score: ${score}`, 10, 25);
+  ctx.fillText(`Time: ${timeLeft}s`, canvas.width - 90, 25);
+
+  requestAnimationFrame(updateGame);
+}
+
+// Slice / Tap Touch Listener
+canvas.addEventListener('touchstart', (e) => {
+  const rect = canvas.getBoundingClientRect();
+  const touchX = e.touches[0].clientX - rect.left;
+  const touchY = e.touches[0].clientY - rect.top;
+
+  for (let i = items.length - 1; i >= 0; i--) {
+    let item = items[i];
+    let dist = Math.hypot(touchX - item.x, touchY - item.y);
+    if (dist < item.radius + 15) { // Slice Hit Radius
+      if (item.type === 'potato') score += 10;
+      else if (item.type === 'star') score += 50;
+      else if (item.type === 'bomb') score = Math.max(0, score - 30);
+      items.splice(i, 1);
+      break;
+    }
+  }
+});
+
+// Start Spawning & Countdown
+setInterval(spawnItem, 600);
+updateGame();
+      </script>
+// middleware/auth.js
+const User = require('../models/User');
+
+// Permission Middleware Check
+const checkPermission = (requiredPermission) => {
+  return async (req, res, next) => {
+    const adminUser = await User.findOne({ telegramId: req.headers['admin-id'] });
+
+    if (!adminUser) return res.status(403).json({ error: "Access denied." });
+
+    // Super Admin (Aap) ko har cheez ki full access hai
+    if (adminUser.role === 'admin') return next();
+
+    // Team Member ke paas specific permission honi chahiye
+    if (adminUser.role === 'team_member' && adminUser.permissions[requiredPermission]) {
+      return next();
+    }
+
+    return res.status(403).json({ error: "Permission Denied: Aapke paas is kaam ka haq nahi hai!" });
+  };
+};
+
+module.exports = checkPermission;
+// config/admin.js
+
+// AAP KI PERMANENT SUPER ADMIN ID
+const SUPER_ADMIN_ID = "7208905905";
+
+const isSuperAdmin = (telegramId) => {
+  return String(telegramId) === SUPER_ADMIN_ID;
+};
+
+const checkAdminRights = (requiredPermission = null) => {
+  return async (req, res, next) => {
+    const userId = req.headers['x-telegram-user-id'];
+
+    if (!userId) {
+      return res.status(401).json({ success: false, message: "Unauthorized Request" });
+    }
+
+    // 1. Agar AAP (7208905905) hain, toh DIRECT ACCESS!
+    if (isSuperAdmin(userId)) {
+      req.isAdmin = true;
+      req.isSuperAdmin = true;
+      return next();
+    }
+
+    // 2. Agar Team Member hai, toh Unki Allowed Permissions Check Hogi
+    const user = await User.findOne({ telegramId: userId });
+
+    if (user && user.role === 'team_member') {
+      if (requiredPermission && user.permissions[requiredPermission] === true) {
+        req.isAdmin = true;
+        req.isSuperAdmin = false;
+        return next();
+      } else {
+        return res.status(403).json({ 
+          success: false, 
+          message: "Aapke paas is feature ko use karne ka haq nahi hai!" 
+        });
+      }
+    }
+
+    return res.status(403).json({ success: false, message: "Access Denied!" });
+  };
+};
+
+module.exports = { SUPER_ADMIN_ID, isSuperAdmin, checkAdminRights };
+
+
+      

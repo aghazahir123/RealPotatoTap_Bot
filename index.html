@@ -9,10 +9,11 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
     <style>
-        body { background-color: #0b0e14; color: #ffffff; font-family: system-ui, -apple-system, sans-serif; user-select: none; -webkit-user-select: none; touch-action: manipulation; overflow-x: hidden; }
-        .tap-btn:active { transform: scale(0.92); }
+        body { background-color: #0b0e14; color: #ffffff; font-family: system-ui, -apple-system, sans-serif; user-select: none; -webkit-user-select: none; overflow-x: hidden; }
+        .tap-btn { transition: transform 0.05s ease; cursor: pointer; }
+        .tap-btn:active { transform: scale(0.90); }
         @keyframes floatUp { 0% { opacity: 1; transform: translateY(0) scale(1); } 100% { opacity: 0; transform: translateY(-80px) scale(1.2); } }
-        .floating-num { position: absolute; pointer-events: none; font-weight: 800; font-size: 1.8rem; color: #00ffa3; text-shadow: 0 0 10px rgba(0,255,163,0.5); animation: floatUp 0.5s ease-out forwards; z-index: 50; }
+        .floating-num { position: absolute; pointer-events: none; font-weight: 800; font-size: 1.8rem; color: #00ffa3; text-shadow: 0 0 10px rgba(0,255,163,0.5); animation: floatUp 0.5s ease-out forwards; z-index: 100; }
         #drop-canvas { touch-action: none; }
     </style>
 </head>
@@ -47,7 +48,7 @@
         
         <div id="user-views" class="space-y-4">
             
-            <!-- Tap Tab (Notcoin & Hamster Kombat Mechanics) -->
+            <!-- Tap Tab -->
             <div id="tab-tap" class="tab-content flex flex-col items-center justify-between space-y-4">
                 <div class="text-center my-1">
                     <span class="text-[10px] uppercase tracking-widest text-gray-400 font-bold">Total Potato Balance</span>
@@ -59,12 +60,12 @@
 
                 <!-- Big Tap Potato -->
                 <div class="relative flex items-center justify-center w-full max-w-[210px] aspect-square my-2">
-                    <button id="potato-btn" class="tap-btn relative w-full h-full rounded-full bg-gradient-to-tr from-emerald-800 via-[#00ffa3]/30 to-[#00ffa3] p-2 shadow-2xl border-4 border-[#00ffa3]/30 outline-none flex items-center justify-center">
-                        <div class="w-full h-full rounded-full bg-[#161c24] flex flex-col items-center justify-center border border-slate-800">
+                    <div id="potato-btn" class="tap-btn relative w-full h-full rounded-full bg-gradient-to-tr from-emerald-800 via-[#00ffa3]/30 to-[#00ffa3] p-2 shadow-2xl border-4 border-[#00ffa3]/30 flex items-center justify-center">
+                        <div class="w-full h-full rounded-full bg-[#161c24] flex flex-col items-center justify-center border border-slate-800 pointer-events-none">
                             <span class="text-7xl filter drop-shadow-[0_0_15px_rgba(0,255,163,0.4)]">🥔</span>
                             <span class="mt-1 text-[10px] font-extrabold text-[#00ffa3] uppercase tracking-wider">TAP POTATO</span>
                         </div>
-                    </button>
+                    </div>
                 </div>
 
                 <!-- Energy Bar -->
@@ -78,9 +79,9 @@
                     </div>
                 </div>
 
-                <!-- Hamster Style Upgrades -->
+                <!-- Upgrades -->
                 <div class="w-full space-y-2 pt-2">
-                    <h3 class="font-bold text-xs text-gray-400 uppercase tracking-wider">Hamster Mining Upgrades</h3>
+                    <h3 class="font-bold text-xs text-gray-400 uppercase tracking-wider">Mining Upgrades</h3>
                     <div class="bg-[#161c24] p-3 rounded-xl border border-slate-800 flex justify-between items-center">
                         <div>
                             <h4 class="font-bold text-xs text-white">Multitap Booster</h4>
@@ -91,7 +92,7 @@
                 </div>
             </div>
 
-            <!-- Blum & Tomato Drop Game Tab -->
+            <!-- Drop Game Tab -->
             <div id="tab-drop" class="tab-content hidden space-y-3 text-center">
                 <h2 class="text-xl font-bold text-white">🌿 Drop & Catch Minigame</h2>
                 <p class="text-xs text-red-400 font-bold">⚠️ Warning: Don't hit Bombs (💣) or lose score!</p>
@@ -128,7 +129,7 @@
                 </div>
             </div>
 
-            <!-- TON Web3 Wallet Integration -->
+            <!-- TON Wallet -->
             <div id="tab-wallet" class="tab-content hidden space-y-3 text-center">
                 <h2 class="text-xl font-bold text-white">TON Wallet</h2>
                 <div class="bg-[#161c24] p-5 rounded-2xl border border-slate-800">
@@ -173,7 +174,7 @@
         let activeUserId = (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) ? String(tg.initDataUnsafe.user.id) : MASTER_ID;
         let activeUserName = (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) ? tg.initDataUnsafe.user.first_name : 'Master Owner';
 
-        const STORAGE_KEY = 'potato_app_user_data_v9_' + activeUserId;
+        const STORAGE_KEY = 'potato_app_user_data_v10_' + activeUserId;
 
         function loadSavedState() {
             let saved = localStorage.getItem(STORAGE_KEY);
@@ -200,30 +201,32 @@
             try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch(e){}
         }
 
-        // Web Audio Synthesizer for Audio FX
+        // Web Audio Synthesizer
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         function playSound(type) {
-            if (!audioCtx) return;
-            if (audioCtx.state === 'suspended') audioCtx.resume();
-            let osc = audioCtx.createOscillator();
-            let gain = audioCtx.createGain();
-            osc.connect(gain);
-            gain.connect(audioCtx.destination);
+            try {
+                if (!audioCtx) return;
+                if (audioCtx.state === 'suspended') audioCtx.resume();
+                let osc = audioCtx.createOscillator();
+                let gain = audioCtx.createGain();
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
 
-            if (type === 'tap') {
-                osc.frequency.setValueAtTime(450, audioCtx.currentTime);
-                osc.frequency.exponentialRampToValueAtTime(850, audioCtx.currentTime + 0.07);
-                gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
-                gain.gain.linearRampToValueAtTime(0.01, audioCtx.currentTime + 0.07);
-                osc.start(); osc.stop(audioCtx.currentTime + 0.07);
-            } else if (type === 'bomb') {
-                osc.type = 'sawtooth';
-                osc.frequency.setValueAtTime(140, audioCtx.currentTime);
-                osc.frequency.linearRampToValueAtTime(30, audioCtx.currentTime + 0.35);
-                gain.gain.setValueAtTime(0.35, audioCtx.currentTime);
-                gain.gain.linearRampToValueAtTime(0.01, audioCtx.currentTime + 0.35);
-                osc.start(); osc.stop(audioCtx.currentTime + 0.35);
-            }
+                if (type === 'tap') {
+                    osc.frequency.setValueAtTime(450, audioCtx.currentTime);
+                    osc.frequency.exponentialRampToValueAtTime(850, audioCtx.currentTime + 0.07);
+                    gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
+                    gain.gain.linearRampToValueAtTime(0.01, audioCtx.currentTime + 0.07);
+                    osc.start(); osc.stop(audioCtx.currentTime + 0.07);
+                } else if (type === 'bomb') {
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(140, audioCtx.currentTime);
+                    osc.frequency.linearRampToValueAtTime(30, audioCtx.currentTime + 0.35);
+                    gain.gain.setValueAtTime(0.35, audioCtx.currentTime);
+                    gain.gain.linearRampToValueAtTime(0.01, audioCtx.currentTime + 0.35);
+                    osc.start(); osc.stop(audioCtx.currentTime + 0.35);
+                }
+            } catch(e) {}
         }
 
         window.onload = function() {
@@ -233,7 +236,6 @@
             document.getElementById('user-name').innerText = state.userName;
             document.getElementById('ref-url-box').value = `https://t.me/RealPotatoTap_Bot?start=ref_${state.userId}`;
 
-            // Offline Energy Calculation
             let now = Date.now();
             let elapsedSec = Math.floor((now - (state.lastEnergyTime || now)) / 1000);
             if (elapsedSec > 0 && state.energy < state.maxEnergy) {
@@ -265,8 +267,8 @@
 
         function setupTap() {
             const btn = document.getElementById('potato-btn');
-            const handleTap = (e) => {
-                if (e) e.preventDefault();
+            
+            const handleTapAction = (clientX, clientY) => {
                 if (state.energy < state.perTap) return;
 
                 state.energy -= state.perTap;
@@ -274,20 +276,29 @@
                 playSound('tap');
                 updateUI();
 
-                let x = (e && e.clientX) ? e.clientX : (window.innerWidth / 2);
-                let y = (e && e.clientY) ? e.clientY : (window.innerHeight / 2);
+                let x = clientX || (window.innerWidth / 2);
+                let y = clientY || (window.innerHeight / 2);
 
                 let num = document.createElement('div');
                 num.className = 'floating-num';
                 num.innerText = '+' + state.perTap;
-                num.style.left = (x - 15) + 'px';
-                num.style.top = (y - 30) + 'px';
+                num.style.left = (x - 20) + 'px';
+                num.style.top = (y - 40) + 'px';
                 document.body.appendChild(num);
                 setTimeout(() => num.remove(), 500);
             };
 
-            btn.addEventListener('touchstart', handleTap, { passive: false });
-            btn.addEventListener('click', handleTap);
+            btn.addEventListener('click', (e) => {
+                handleTapAction(e.clientX, e.clientY);
+            });
+
+            btn.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                for (let i = 0; i < e.changedTouches.length; i++) {
+                    let t = e.changedTouches[i];
+                    handleTapAction(t.clientX, t.clientY);
+                }
+            }, { passive: false });
         }
 
         function buyTapUpgrade() {
@@ -339,14 +350,4 @@
         function doTask(id) {
             let t = state.tasks.find(x => x.id === id);
             if (!t || t.done) return;
-            if (t.url) window.open(t.url, '_blank');
-            t.done = true;
-            state.coins += t.reward;
-            state.keys += 1;
-            updateUI();
-            renderTasks();
-        }
-
-        function claimDailyReward() {
-            if (state.dailyClaimed) return;
-      
+       

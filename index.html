@@ -3,288 +3,174 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Potato - Blum Style Mini App</title>
+    <title>Potato Blum Mini App</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        blum: { bg: '#0b0e14', card: '#161c24', neon: '#00ffa3', border: '#222b38', accent: '#101720' }
-                    },
-                    fontFamily: { sans: ['Outfit', 'sans-serif'], display: ['Syne', 'sans-serif'] }
-                }
-            }
-        }
-    </script>
     <style>
-        body { background-color: #0b0e14; color: #ffffff; font-family: 'Outfit', sans-serif; user-select: none; -webkit-user-select: none; touch-action: manipulation; overflow-x: hidden; }
-        @keyframes floatUp { 0% { opacity: 1; transform: translateY(0) scale(1); } 100% { opacity: 0; transform: translateY(-80px) scale(1.2); } }
-        .floating-num { position: absolute; pointer-events: none; font-weight: 800; font-size: 1.6rem; color: #00ffa3; text-shadow: 0 0 10px rgba(0,255,163,0.6); animation: floatUp 0.6s ease-out forwards; z-index: 50; }
-        .blum-glow { box-shadow: 0 0 30px rgba(0, 255, 163, 0.2); transition: transform 0.08s ease; }
-        .blum-glow:active { transform: scale(0.93); }
+        body { background-color: #0b0e14; color: #ffffff; font-family: system-ui, -apple-system, sans-serif; user-select: none; -webkit-user-select: none; touch-action: manipulation; overflow: hidden; }
+        .blum-btn:active { transform: scale(0.92); }
+        @keyframes floatUp { 0% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-70px); } }
+        .floating-num { position: absolute; pointer-events: none; font-weight: 800; font-size: 1.5rem; color: #00ffa3; animation: floatUp 0.5s ease-out forwards; z-index: 50; }
         #drop-canvas { touch-action: none; }
     </style>
 </head>
-<body class="flex flex-col h-screen max-w-md mx-auto relative border-x border-blum-border">
+<body class="flex flex-col h-screen max-w-md mx-auto relative border-x border-slate-800">
 
-    <!-- Top Header (Blum Style) -->
-    <header class="p-4 flex items-center justify-between border-b border-blum-border bg-blum-bg/95 sticky top-0 z-40 backdrop-blur">
-        <div class="flex items-center gap-3">
-            <div class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-blum-neon to-emerald-500 p-[2px]">
-                <div class="w-full h-full bg-blum-bg rounded-[14px] flex items-center justify-center">
-                    <span class="text-2xl">🥔</span>
+    <!-- Header -->
+    <header class="p-3.5 flex items-center justify-between border-b border-slate-800 bg-[#0b0e14] sticky top-0 z-40">
+        <div class="flex items-center gap-2.5">
+            <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-emerald-500 to-green-300 p-[2px]">
+                <div class="w-full h-full bg-[#0b0e14] rounded-[14px] flex items-center justify-center">
+                    <span class="text-xl">🥔</span>
                 </div>
             </div>
             <div>
-                <h3 class="font-bold text-sm tracking-wide text-white" id="user-name">Potato User</h3>
-                <span class="text-[11px] text-blum-neon font-semibold flex items-center gap-1">
-                    <i class="fa-solid fa-key text-[9px]"></i> Keys: <span id="user-keys">5</span>
+                <h3 class="font-bold text-xs text-white" id="user-name">Potato User</h3>
+                <span class="text-[10px] text-[#00ffa3] font-semibold flex items-center gap-1">
+                    <i class="fa-solid fa-key"></i> Keys: <span id="user-keys">0</span>
                 </span>
             </div>
         </div>
         
-        <!-- Strict Master Admin Button (Only for 7208905905) -->
+        <!-- Strict Master Admin Button (7208905905) -->
         <div id="admin-btn-wrapper" style="display: none;">
-            <button onclick="toggleAdminPanel()" class="px-3.5 py-1.5 rounded-xl bg-blum-neon/10 border border-blum-neon/40 text-blum-neon text-xs font-bold flex items-center gap-1.5 hover:bg-blum-neon/20 transition">
-                <i class="fa-solid fa-shield-halved"></i> <span id="admin-btn-text">Admin</span>
+            <button onclick="toggleAdminPanel()" class="px-3 py-1.5 rounded-xl bg-[#00ffa3]/10 border border-[#00ffa3]/40 text-[#00ffa3] text-xs font-bold">
+                <i class="fa-solid fa-shield-halved"></i> Admin
             </button>
         </div>
     </header>
 
     <!-- Main Viewport -->
-    <main class="flex-1 overflow-y-auto p-4 pb-24 relative" id="app-viewport">
+    <main class="flex-1 overflow-y-auto p-4 pb-20 relative" id="app-viewport">
         
-        <!-- USER VIEWS -->
         <div id="user-views" class="space-y-4">
-            
-            <!-- Tab 1: Blum & Hamster Style Tap Game -->
-            <div id="tab-tap" class="tab-content flex flex-col items-center justify-between min-h-[440px] py-2">
+            <!-- Tap Tab -->
+            <div id="tab-tap" class="tab-content flex flex-col items-center justify-between min-h-[420px] py-2">
                 <div class="text-center my-1">
-                    <span class="text-[11px] uppercase tracking-widest text-gray-400 font-bold">Potato Balance</span>
+                    <span class="text-[10px] uppercase tracking-widest text-gray-400 font-bold">Potato Balance</span>
                     <div class="flex items-center justify-center gap-2 mt-1">
                         <span class="text-3xl">🥔</span>
-                        <h1 class="text-4xl font-extrabold font-display text-white" id="balance-num">0</h1>
+                        <h1 class="text-4xl font-extrabold text-white" id="balance-num">0</h1>
                     </div>
                 </div>
 
-                <div class="w-full bg-blum-card p-3 rounded-2xl border border-blum-border">
-                    <div class="flex justify-between text-xs mb-1 font-semibold">
-                        <span class="text-gray-400" id="level-title">Rank: Potato Seed</span>
-                        <span class="text-blum-neon" id="level-progress-text">0 / 10,000</span>
-                    </div>
-                    <div class="w-full bg-black/40 h-2.5 rounded-full overflow-hidden border border-blum-border p-[1px]">
-                        <div id="level-bar" class="bg-gradient-to-r from-emerald-600 via-blum-neon to-green-300 h-full rounded-full transition-all duration-300" style="width: 0%"></div>
-                    </div>
-                </div>
-
-                <div class="relative my-auto flex items-center justify-center w-full max-w-[240px] aspect-square">
-                    <button id="potato-btn" class="blum-glow relative w-full h-full rounded-full bg-gradient-to-tr from-emerald-800 via-blum-neon/30 to-blum-neon p-2 shadow-2xl border-4 border-blum-neon/30 outline-none flex items-center justify-center">
-                        <div class="w-full h-full rounded-full bg-blum-card flex flex-col items-center justify-center border border-blum-border shadow-inner">
-                            <span class="text-7xl filter drop-shadow-[0_0_15px_rgba(0,255,163,0.4)]">🥔</span>
-                            <span class="mt-1 text-[10px] font-extrabold tracking-widest text-blum-neon uppercase">FARM POTATO</span>
+                <div class="relative my-auto flex items-center justify-center w-full max-w-[220px] aspect-square">
+                    <button id="potato-btn" class="blum-btn relative w-full h-full rounded-full bg-gradient-to-tr from-emerald-800 via-[#00ffa3]/30 to-[#00ffa3] p-2 shadow-2xl border-4 border-[#00ffa3]/30 outline-none flex items-center justify-center">
+                        <div class="w-full h-full rounded-full bg-[#161c24] flex flex-col items-center justify-center border border-slate-800">
+                            <span class="text-7xl">🥔</span>
+                            <span class="mt-1 text-[10px] font-extrabold text-[#00ffa3] uppercase">FARM POTATO</span>
                         </div>
                     </button>
                 </div>
 
                 <div class="w-full mt-2">
-                    <div class="flex justify-between items-center mb-1">
-                        <div class="flex items-center gap-1.5">
-                            <i class="fa-solid fa-bolt text-blum-neon text-sm"></i>
-                            <span class="font-bold text-xs" id="energy-num">1000 / 1000</span>
-                        </div>
-                        <span class="text-[11px] text-gray-400 font-semibold">+1 per tap</span>
+                    <div class="flex justify-between items-center mb-1 text-xs">
+                        <span class="font-bold text-[#00ffa3]">⚡ <span id="energy-num">1000 / 1000</span></span>
+                        <span class="text-gray-400">+1 per tap</span>
                     </div>
-                    <div class="w-full bg-black/40 h-3 rounded-full overflow-hidden border border-blum-border p-[1.5px]">
-                        <div id="energy-bar" class="bg-blum-neon h-full rounded-full transition-all duration-150" style="width: 100%"></div>
+                    <div class="w-full bg-slate-900 h-2.5 rounded-full overflow-hidden border border-slate-800">
+                        <div id="energy-bar" class="bg-[#00ffa3] h-full transition-all duration-150" style="width: 100%"></div>
                     </div>
                 </div>
             </div>
 
-            <!-- Tab 2: Blum Drop Game (Falling Crypto/Potatos & Keys) -->
-            <div id="tab-drop" class="tab-content hidden space-y-3">
-                <div class="text-center py-1">
-                    <h2 class="text-xl font-bold font-display text-white">🌿 Blum Drop Game</h2>
-                    <p class="text-xs text-gray-400">Tap falling potatos and keys before time runs out!</p>
-                </div>
-                <div class="relative w-full h-[360px] bg-blum-card rounded-2xl border border-blum-border overflow-hidden flex flex-col items-center justify-center">
+            <!-- Drop Game Tab -->
+            <div id="tab-drop" class="tab-content hidden space-y-3 text-center">
+                <h2 class="text-xl font-bold text-white">🌿 Blum Drop Game</h2>
+                <div class="relative w-full h-[340px] bg-[#161c24] rounded-2xl border border-slate-800 overflow-hidden flex flex-col items-center justify-center">
                     <canvas id="drop-canvas" class="absolute inset-0 w-full h-full"></canvas>
                     <div id="drop-start-overlay" class="relative z-10 text-center space-y-3 p-4">
                         <span class="text-5xl">🥔</span>
-                        <h3 class="font-bold text-sm text-white">Catch Items & Earn Huge Rewards</h3>
-                        <button onclick="startDropGame()" class="px-6 py-3 bg-blum-neon text-black font-extrabold text-xs rounded-xl shadow-lg hover:bg-emerald-400 transition">START DROP GAME (30s)</button>
+                        <button onclick="startDropGame()" class="px-6 py-3 bg-[#00ffa3] text-black font-extrabold text-xs rounded-xl">START DROP GAME (30s)</button>
                     </div>
                 </div>
             </div>
 
-            <!-- Tab 3: Tasks Wall -->
+            <!-- Tasks Tab -->
             <div id="tab-tasks" class="tab-content hidden space-y-3">
-                <div class="text-center py-1">
-                    <h2 class="text-xl font-bold font-display text-white">Tasks & Earn</h2>
-                    <p class="text-xs text-gray-400">Complete tasks to claim bonus coins & keys!</p>
-                </div>
-                <div class="bg-gradient-to-r from-blum-neon/10 to-blum-card p-4 rounded-2xl border border-blum-neon/30 flex items-center justify-between">
+                <h2 class="text-xl font-bold text-white text-center">Tasks Wall</h2>
+                <div class="bg-[#161c24] p-4 rounded-2xl border border-slate-800 flex items-center justify-between">
                     <div>
-                        <span class="text-[10px] text-blum-neon font-extrabold uppercase">Daily Reward</span>
-                        <h3 class="font-bold text-sm mt-0.5">Daily Check-In</h3>
-                        <p class="text-xs text-gray-300">+10,000 Coins & +2 Keys</p>
+                        <h4 class="font-bold text-sm">Daily Check-In</h4>
+                        <span class="text-xs text-[#00ffa3]">+10,000 Coins & +2 Keys</span>
                     </div>
-                    <button onclick="claimDailyReward()" class="px-4 py-2 bg-blum-neon text-black font-extrabold text-xs rounded-xl shadow">CLAIM</button>
+                    <button onclick="claimDailyReward()" class="px-4 py-2 bg-[#00ffa3] text-black font-extrabold text-xs rounded-xl">CLAIM</button>
                 </div>
-                <h3 class="font-bold text-xs text-gray-400 uppercase mt-2">Available Tasks</h3>
-                <div class="space-y-2.5" id="user-tasks-list"></div>
+                <div class="space-y-2" id="user-tasks-list"></div>
             </div>
 
-            <!-- Tab 4: Squad / Referral -->
+            <!-- Squad Tab -->
             <div id="tab-friends" class="tab-content hidden space-y-3">
-                <div class="text-center py-1">
-                    <h2 class="text-xl font-bold font-display text-white">Invite Squad</h2>
-                    <p class="text-xs text-gray-400">Bring friends and get 10% bonus earnings!</p>
-                </div>
-                <div class="bg-blum-card p-4 rounded-2xl border border-blum-border space-y-3">
-                    <span class="text-[10px] text-gray-400 font-extrabold uppercase">Your Invite Link</span>
-                    <div class="flex gap-2">
-                        <input type="text" readonly id="ref-url-box" class="w-full bg-black/40 border border-blum-border rounded-xl px-3 py-2 text-xs font-mono text-gray-300 outline-none">
-                        <button onclick="copyRefLink()" class="px-4 bg-blum-neon text-black font-extrabold text-xs rounded-xl">Copy</button>
-                    </div>
+                <h2 class="text-xl font-bold text-white text-center">Invite Squad</h2>
+                <div class="bg-[#161c24] p-4 rounded-2xl border border-slate-800 space-y-2">
+                    <input type="text" readonly id="ref-url-box" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs font-mono text-gray-300">
+                    <button onclick="copyRefLink()" class="w-full py-2 bg-[#00ffa3] text-black font-extrabold text-xs rounded-xl">COPY LINK</button>
                 </div>
             </div>
 
-            <!-- Tab 5: Real TON Wallet -->
+            <!-- Wallet Tab -->
             <div id="tab-wallet" class="tab-content hidden space-y-3 text-center">
-                <div class="text-center py-1">
-                    <h2 class="text-xl font-bold font-display text-white">TON Wallet</h2>
-                    <p class="text-xs text-gray-400">Connect your TON Wallet for airdrop listing</p>
-                </div>
-                <div class="bg-blum-card p-6 rounded-2xl border border-blum-border space-y-4">
-                    <div class="w-14 h-14 rounded-2xl bg-blum-neon/10 border border-blum-neon/30 flex items-center justify-center mx-auto text-blum-neon text-2xl"><i class="fa-solid fa-wallet"></i></div>
+                <h2 class="text-xl font-bold text-white">TON Wallet</h2>
+                <div class="bg-[#161c24] p-5 rounded-2xl border border-slate-800">
                     <div id="ton-connect-btn-container" class="flex justify-center"></div>
                 </div>
             </div>
-
         </div>
 
-        <!-- STRICT MASTER ADMIN PANEL (Locked to 7208905905) -->
+        <!-- Admin View -->
         <div id="admin-view" class="hidden space-y-3">
-            <div class="bg-blum-neon/10 p-4 rounded-2xl border border-blum-neon/40 flex items-center justify-between">
-                <div>
-                    <h2 class="text-base font-bold font-display text-white flex items-center gap-2"><i class="fa-solid fa-shield-halved text-blum-neon"></i> Master Admin Control</h2>
-                    <p class="text-xs text-gray-400">Full control over tasks & game config</p>
-                </div>
-                <span class="px-2.5 py-1 bg-blum-neon text-black text-[10px] font-extrabold rounded-lg">OWNER</span>
+            <h2 class="text-base font-bold text-[#00ffa3]">Owner Admin Panel</h2>
+            <div class="bg-[#161c24] p-4 rounded-2xl border border-slate-800 space-y-3">
+                <input type="text" id="adm-task-title" placeholder="Task Title" class="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-xs text-white">
+                <input type="url" id="adm-task-url" placeholder="Task Link" class="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-xs text-white">
+                <input type="number" id="adm-task-reward" placeholder="Reward Coins" class="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-xs text-white">
+                <button onclick="adminAddTask()" class="w-full py-2.5 bg-[#00ffa3] text-black font-extrabold text-xs rounded-xl">PUBLISH TASK</button>
             </div>
-
-            <div class="bg-blum-card p-4 rounded-2xl border border-blum-border space-y-3">
-                <h3 class="font-bold text-xs text-blum-neon uppercase">Add New Game Task</h3>
-                <input type="text" id="adm-task-title" placeholder="Task Title" class="w-full bg-black/40 border border-blum-border rounded-xl p-2.5 text-xs text-white outline-none">
-                <input type="url" id="adm-task-url" placeholder="Task Link (https://...)" class="w-full bg-black/40 border border-blum-border rounded-xl p-2.5 text-xs text-white outline-none">
-                <input type="number" id="adm-task-reward" placeholder="Reward Coins" class="w-full bg-black/40 border border-blum-border rounded-xl p-2.5 text-xs text-white outline-none">
-                <button onclick="adminAddTask()" class="w-full py-2.5 bg-blum-neon text-black font-extrabold text-xs rounded-xl shadow">PUBLISH TASK</button>
-            </div>
-            
-            <h3 class="font-bold text-xs text-gray-400 uppercase">Manage Tasks (<span id="adm-task-count">0</span>)</h3>
-            <div class="space-y-2" id="adm-tasks-list"></div>
         </div>
 
     </main>
 
-    <!-- Bottom Navigation (Blum Style) -->
-    <nav id="bottom-nav" class="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-blum-bg/95 border-t border-blum-border p-2 grid grid-cols-5 gap-1 z-40 backdrop-blur">
-        <button onclick="switchTab('tap')" id="nav-tap" class="nav-btn flex flex-col items-center justify-center py-1.5 rounded-xl text-blum-neon bg-blum-card border border-blum-neon/30"><i class="fa-solid fa-seedling text-sm"></i><span class="text-[10px] font-bold mt-1">Farm</span></button>
-        <button onclick="switchTab('drop')" id="nav-drop" class="nav-btn flex flex-col items-center justify-center py-1.5 rounded-xl text-gray-400"><i class="fa-solid fa-gamepad text-sm"></i><span class="text-[10px] font-bold mt-1">Drop</span></button>
-        <button onclick="switchTab('tasks')" id="nav-tasks" class="nav-btn flex flex-col items-center justify-center py-1.5 rounded-xl text-gray-400"><i class="fa-solid fa-list-check text-sm"></i><span class="text-[10px] font-bold mt-1">Tasks</span></button>
-        <button onclick="switchTab('friends')" id="nav-friends" class="nav-btn flex flex-col items-center justify-center py-1.5 rounded-xl text-gray-400"><i class="fa-solid fa-users text-sm"></i><span class="text-[10px] font-bold mt-1">Squad</span></button>
-        <button onclick="switchTab('wallet')" id="nav-wallet" class="nav-btn flex flex-col items-center justify-center py-1.5 rounded-xl text-gray-400"><i class="fa-solid fa-wallet text-sm"></i><span class="text-[10px] font-bold mt-1">Wallet</span></button>
+    <!-- Navigation -->
+    <nav id="bottom-nav" class="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-[#0b0e14] border-t border-slate-800 p-2 grid grid-cols-5 gap-1 z-40">
+        <button onclick="switchTab('tap')" id="nav-tap" class="flex flex-col items-center justify-center py-1 rounded-xl text-[#00ffa3]"><i class="fa-solid fa-seedling"></i><span class="text-[10px] font-bold mt-1">Farm</span></button>
+        <button onclick="switchTab('drop')" id="nav-drop" class="flex flex-col items-center justify-center py-1 rounded-xl text-gray-400"><i class="fa-solid fa-gamepad"></i><span class="text-[10px] font-bold mt-1">Drop</span></button>
+        <button onclick="switchTab('tasks')" id="nav-tasks" class="flex flex-col items-center justify-center py-1 rounded-xl text-gray-400"><i class="fa-solid fa-list-check"></i><span class="text-[10px] font-bold mt-1">Tasks</span></button>
+        <button onclick="switchTab('friends')" id="nav-friends" class="flex flex-col items-center justify-center py-1 rounded-xl text-gray-400"><i class="fa-solid fa-users"></i><span class="text-[10px] font-bold mt-1">Squad</span></button>
+        <button onclick="switchTab('wallet')" id="nav-wallet" class="flex flex-col items-center justify-center py-1 rounded-xl text-gray-400"><i class="fa-solid fa-wallet"></i><span class="text-[10px] font-bold mt-1">Wallet</span></button>
     </nav>
 
-    <!-- Modal Notification -->
-    <div id="pop-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50 hidden">
-        <div class="bg-blum-card border border-blum-neon p-5 rounded-2xl max-w-xs w-full text-center space-y-3 shadow-2xl">
-            <div id="modal-icon" class="text-4xl text-blum-neon"><i class="fa-solid fa-circle-check"></i></div>
-            <h3 class="font-extrabold text-base text-white" id="modal-title">Success</h3>
-            <p class="text-xs text-gray-300" id="modal-msg">Done!</p>
-            <button onclick="closeModal()" class="w-full py-2 bg-blum-neon text-black font-extrabold text-xs rounded-xl">OK</button>
-        </div>
-    </div>
-
     <script>
-        const MASTER_OWNER_ID = "7208905905";
-
+        const MASTER_ID = "7208905905";
         let tg = window.Telegram ? window.Telegram.WebApp : null;
         if (tg) { tg.expand(); tg.ready(); }
 
-        const STORAGE_KEY = 'potato_blum_state_v7';
-
-        function getState() {
-            let saved = localStorage.getItem(STORAGE_KEY);
-            if (saved) { try { return JSON.parse(saved); } catch(e){} }
-            let tgUser = (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) ? tg.initDataUnsafe.user : null;
-            return {
-                userId: tgUser ? String(tgUser.id) : MASTER_OWNER_ID,
-                userName: tgUser ? tgUser.first_name : 'Potato Master',
-                coins: 0, keys: 5, energy: 1000, maxEnergy: 1000, perTap: 1,
-                tasks: [
-                    { id: 't1', title: 'Join Official Telegram Channel', reward: 5000, url: 'https://t.me/telegram', done: false },
-                    { id: 't2', title: 'Watch YouTube Announcement', reward: 3000, url: 'https://youtube.com', done: false }
-                ]
-            };
-        }
-
-        let state = getState();
-        let viewMode = 'user';
-
-        function saveState() { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
-
-        const ranks = [
-            { name: "Potato Seed", max: 10000 },
-            { name: "Sprout Farmer", max: 50000 },
-            { name: "Golden Harvest", max: 200000 },
-            { name: "Potato Baron", max: 1000000 },
-            { name: "Legendary Tycoon", max: 5000000 }
-        ];
+        let state = {
+            userId: (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) ? String(tg.initDataUnsafe.user.id) : MASTER_ID,
+            userName: (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) ? tg.initDataUnsafe.user.first_name : 'Master Owner',
+            coins: 0, keys: 0, energy: 1000, maxEnergy: 1000, perTap: 1,
+            tasks: [{ id: 't1', title: 'Join Telegram Channel', reward: 5000, url: 'https://t.me/telegram', done: false }]
+        };
 
         window.onload = function() {
-            checkAdmin();
-            setupHeader();
+            if (state.userId === MASTER_ID) {
+                document.getElementById('admin-btn-wrapper').style.display = 'block';
+            }
+            document.getElementById('user-name').innerText = state.userName;
+            document.getElementById('ref-url-box').value = `https://t.me/RealPotatoTap_Bot?start=ref_${state.userId}`;
             updateUI();
             setupTap();
             startEnergy();
             renderTasks();
-            renderAdminTasks();
             initWallet();
         };
 
-        function checkAdmin() {
-            let currentId = state.userId;
-            if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) {
-                currentId = String(tg.initDataUnsafe.user.id);
-            }
-            if (currentId === MASTER_OWNER_ID) {
-                document.getElementById('admin-btn-wrapper').style.display = 'block';
-            }
-        }
-
-        function setupHeader() {
-            document.getElementById('user-name').innerText = state.userName;
-            document.getElementById('ref-url-box').value = `https://t.me/RealPotatoTap_Bot?start=ref_${state.userId}`;
-        }
-
         function updateUI() {
-            document.getElementById('balance-num').innerText = Math.floor(state.coins).toLocaleString();
+            document.getElementById('balance-num').innerText = state.coins;
             document.getElementById('user-keys').innerText = state.keys;
-            document.getElementById('energy-num').innerText = `${Math.floor(state.energy)} / ${state.maxEnergy}`;
-            document.getElementById('energy-bar').style.width = `${(state.energy / state.maxEnergy) * 100}%`;
-
-            let curRank = ranks.find(r => state.coins < r.max) || ranks[ranks.length - 1];
-            document.getElementById('level-title').innerText = `Rank: ${curRank.name}`;
-            document.getElementById('level-progress-text').innerText = `${Math.floor(state.coins).toLocaleString()} / ${curRank.max.toLocaleString()}`;
-            document.getElementById('level-bar').style.width = `${Math.min(100, (state.coins / curRank.max) * 100)}%`;
-
-            saveState();
+            document.getElementById('energy-num').innerText = Math.floor(state.energy) + " / " + state.maxEnergy;
+            document.getElementById('energy-bar').style.width = ((state.energy / state.maxEnergy) * 100) + "%";
         }
 
         function setupTap() {
@@ -306,17 +192,17 @@
                 num.style.left = (x - 15) + 'px';
                 num.style.top = (y - 30) + 'px';
                 document.body.appendChild(num);
-                setTimeout(() => num.remove(), 600);
+                setTimeout(() => num.remove(), 500);
             };
 
+            btn.addEventListener('touchstart', handleTap, { passive: false });
             btn.addEventListener('click', handleTap);
-            btn.addEventListener('touchstart', handleTap, { passive: true });
         }
 
         function startEnergy() {
             setInterval(() => {
                 if (state.energy < state.maxEnergy) {
-                    state.energy = Math.min(state.maxEnergy, state.energy + 3);
+                    state.energy = Math.min(state.maxEnergy, state.energy + 2);
                     updateUI();
                 }
             }, 1000);
@@ -324,5 +210,125 @@
 
         function switchTab(tab) {
             document.querySelectorAll('.tab-content').forEach(p => p.classList.add('hidden'));
-            document.querySelectorAll('.nav-btn').forEach(b => {
-                b.className = 'nav-btn flex flex-col items-center justify-center py-1.5 rou
+            document.querySelectorAll('nav button').forEach(b => b.className = 'flex flex-col items-center justify-center py-1 rounded-xl text-gray-400');
+            document.getElementById(`tab-${tab}`).classList.remove('hidden');
+            document.getElementById(`nav-${tab}`).className = 'flex flex-col items-center justify-center py-1 rounded-xl text-[#00ffa3]';
+        }
+
+        function toggleAdminPanel() {
+            document.getElementById('user-views').classList.toggle('hidden');
+            document.getElementById('admin-view').classList.toggle('hidden');
+        }
+
+        function renderTasks() {
+            let box = document.getElementById('user-tasks-list');
+            box.innerHTML = '';
+            state.tasks.forEach(t => {
+                let div = document.createElement('div');
+                div.className = "bg-[#161c24] p-3 rounded-xl border border-slate-800 flex justify-between items-center";
+                div.innerHTML = `<div><h4 class="font-bold text-xs">${t.title}</h4><span class="text-xs text-[#00ffa3]">+${t.reward} Coins</span></div><button onclick="doTask('${t.id}')" class="px-3 py-1.5 ${t.done?'bg-slate-800 text-gray-500':'bg-[#00ffa3] text-black'} font-bold text-xs rounded-xl">${t.done?'DONE':'START'}</button>`;
+                box.appendChild(div);
+            });
+        }
+
+        function doTask(id) {
+            let t = state.tasks.find(x => x.id === id);
+            if (!t || t.done) return;
+            if (t.url) window.open(t.url, '_blank');
+            t.done = true;
+            state.coins += t.reward;
+            state.keys += 1;
+            updateUI();
+            renderTasks();
+        }
+
+        function claimDailyReward() {
+            state.coins += 10000;
+            state.keys += 2;
+            updateUI();
+            alert("Daily bonus claimed!");
+        }
+
+        function copyRefLink() {
+            let box = document.getElementById('ref-url-box');
+            box.select();
+            document.execCommand('copy');
+            alert("Referral link copied!");
+        }
+
+        function adminAddTask() {
+            let title = document.getElementById('adm-task-title').value.trim();
+            let url = document.getElementById('adm-task-url').value.trim();
+            let reward = parseInt(document.getElementById('adm-task-reward').value);
+            if (!title || !url || isNaN(reward)) return;
+            state.tasks.push({ id: 't' + Date.now(), title, url, reward, done: false });
+            renderTasks();
+            alert("Task published!");
+        }
+
+        function initWallet() {
+            try {
+                new TON_CONNECT_UI.TonConnectUI({
+                    manifestUrl: 'https://real-potato-tap.vercel.app/tonconnect-manifest.json',
+                    buttonRootId: 'ton-connect-btn-container'
+                });
+            } catch(e) {}
+        }
+
+        // Blum Drop Game Logic
+        let dropInterval = null, dropTimer = null;
+        function startDropGame() {
+            document.getElementById('drop-start-overlay').classList.add('hidden');
+            const canvas = document.getElementById('drop-canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = canvas.offsetWidth;
+            canvas.height = canvas.offsetHeight;
+            let items = [], timeLeft = 30;
+
+            dropInterval = setInterval(() => {
+                items.push({ x: Math.random() * (canvas.width - 40) + 20, y: -20, speed: Math.random() * 2 + 2, emoji: Math.random() > 0.3 ? '🥔' : '🔑' });
+            }, 350);
+
+            function loop() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                for (let i = items.length - 1; i >= 0; i--) {
+                    let it = items[i];
+                    it.y += it.speed;
+                    ctx.font = '26px serif';
+                    ctx.fillText(it.emoji, it.x - 13, it.y + 10);
+                    if (it.y > canvas.height + 30) items.splice(i, 1);
+                }
+                if (timeLeft > 0) requestAnimationFrame(loop);
+            }
+            loop();
+
+            canvas.onclick = (e) => {
+                const rect = canvas.getBoundingClientRect();
+                const cx = e.clientX - rect.left, cy = e.clientY - rect.top;
+                for (let i = items.length - 1; i >= 0; i--) {
+                    let it = items[i];
+                    if (Math.hypot(it.x - cx, it.y - cy) < 35) {
+                        if (it.emoji === '🔑') state.keys += 1;
+                        else state.coins += 100;
+                        items.splice(i, 1);
+                        updateUI();
+                        break;
+                    }
+                }
+            };
+
+            dropTimer = setInterval(() => {
+                timeLeft--;
+                if (timeLeft <= 0) {
+                    clearInterval(dropInterval);
+                    clearInterval(dropTimer);
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    document.getElementById('drop-start-overlay').classList.remove('hidden');
+                    alert("Round finished!");
+                }
+            }, 1000);
+        }
+    </script>
+</body>
+</html>
+

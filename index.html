@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shikarpur Jobs Portal - Rozgar Ki Maloomat</title>
+    <title>Shikarpur Auto Jobs Portal</title>
     <style>
         * {
             box-sizing: border-box;
@@ -13,22 +13,22 @@
         }
 
         body {
-            background-color: #f4f6f9;
+            background-color: #f0f2f5;
             color: #333;
         }
 
         /* Header */
         header {
-            background-color: #0d6efd;
+            background: linear-gradient(135deg, #0d6efd, #0a58ca);
             color: white;
-            padding: 25px 15px;
+            padding: 30px 15px;
             text-align: center;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
         }
 
         header h1 {
-            font-size: 2rem;
-            margin-bottom: 5px;
+            font-size: 2.2rem;
+            margin-bottom: 8px;
         }
 
         header p {
@@ -36,109 +36,90 @@
             opacity: 0.9;
         }
 
+        .live-tag {
+            background-color: #dc3545;
+            color: white;
+            padding: 4px 12px;
+            font-size: 0.8rem;
+            border-radius: 20px;
+            font-weight: bold;
+            display: inline-block;
+            margin-top: 10px;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
         /* Container */
         .container {
-            max-width: 1000px;
-            margin: 20px auto;
+            max-width: 900px;
+            margin: 25px auto;
             padding: 0 15px;
         }
 
-        /* Search Bar */
-        .search-box {
-            margin-bottom: 25px;
-            display: flex;
-            gap: 10px;
-        }
-
-        .search-box input {
-            flex: 1;
-            padding: 12px 15px;
-            font-size: 1rem;
-            border: 2px solid #ddd;
-            border-radius: 8px;
-            outline: none;
-        }
-
-        .search-box input:focus {
-            border-color: #0d6efd;
-        }
-
-        /* Job Card Grid */
-        .job-list {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 20px;
-        }
-
-        /* Job Card Styling */
-        .job-card {
+        .feed-card {
             background: white;
-            border-radius: 10px;
+            border-radius: 12px;
             padding: 20px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-            border-top: 4px solid #0d6efd;
-            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            margin-bottom: 20px;
+        }
+
+        .feed-title {
+            font-size: 1.3rem;
+            color: #0d6efd;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #e9ecef;
+            padding-bottom: 10px;
             display: flex;
-            flex-direction: column;
+            align-items: center;
             justify-content: space-between;
         }
 
-        .job-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        /* RSS Widget Container Styling */
+        #job-feed-container {
+            min-height: 300px;
         }
 
-        .job-card h3 {
-            color: #1a1a1a;
-            font-size: 1.25rem;
+        .rss-job-item {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            transition: background 0.2s;
+        }
+
+        .rss-job-item:hover {
+            background-color: #f8f9fa;
+        }
+
+        .rss-job-item h4 {
+            font-size: 1.1rem;
+            color: #212529;
+            margin-bottom: 5px;
+        }
+
+        .rss-job-item p {
+            font-size: 0.9rem;
+            color: #6c757d;
             margin-bottom: 10px;
         }
 
-        .job-badge {
-            display: inline-block;
-            padding: 4px 10px;
-            font-size: 0.8rem;
-            font-weight: bold;
-            border-radius: 20px;
-            margin-bottom: 12px;
-            width: fit-content;
-        }
-
-        .badge-gov {
-            background-color: #d1e7dd;
-            color: #0f5132;
-        }
-
-        .badge-pvt {
-            background-color: #fff3cd;
-            color: #664d03;
-        }
-
-        .job-info {
-            font-size: 0.9rem;
-            color: #555;
-            margin-bottom: 8px;
-        }
-
-        .job-info strong {
-            color: #222;
-        }
-
         .apply-btn {
-            display: block;
-            text-align: center;
-            background-color: #25d366;
+            display: inline-block;
+            background-color: #198754;
             color: white;
             text-decoration: none;
-            padding: 10px;
-            border-radius: 6px;
+            padding: 6px 14px;
+            font-size: 0.85rem;
+            border-radius: 5px;
             font-weight: bold;
-            margin-top: 15px;
-            transition: background 0.35s;
         }
 
         .apply-btn:hover {
-            background-color: #1ebc57;
+            background-color: #146c43;
         }
 
         /* Footer */
@@ -146,9 +127,9 @@
             text-align: center;
             padding: 20px;
             margin-top: 40px;
-            background: #222;
+            background: #111;
             color: #aaa;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
         }
     </style>
 </head>
@@ -156,79 +137,61 @@
 
     <header>
         <h1>Shikarpur Jobs Portal</h1>
-        <p>Shikarpur Aur Sindh Ki Tamam Sarkari Aur Private Mulazmaten</p>
+        <p>Shikarpur Aur Sindh Ki Tamam Nayi Job Openings Automated Feed</p>
+        <span class="live-tag">● AUTO UPDATE LIVE</span>
     </header>
 
     <div class="container">
-        <!-- Search Box -->
-        <div class="search-box">
-            <input type="text" id="searchInput" onkeyup="searchJobs()" placeholder="Job Title Ya Department Search Karein...">
-        </div>
-
-        <!-- Job Cards Container -->
-        <div class="job-list" id="jobContainer">
-
-            <!-- Job 1 -->
-            <div class="job-card">
-                <div>
-                    <span class="job-badge badge-gov">Government Job</span>
-                    <h3>Primary School Teacher (PST)</h3>
-                    <p class="job-info"><strong>Department:</strong> School Education Sindh</p>
-                    <p class="job-info"><strong>Location:</strong> District Shikarpur</p>
-                    <p class="job-info"><strong>Education:</strong> Graduation / B.A / B.Sc</p>
-                    <p class="job-info"><strong>Last Date:</strong> 15 November 2026</p>
-                </div>
-                <a href="https://wa.me/923001234567?text=Mujhe PST Job Shikarpur ke bare me maloomat chahiye" class="apply-btn" target="_blank">WhatsApp Par Rabta Karein</a>
+        <div class="feed-card">
+            <div class="feed-title">
+                <span>Tazareen Jobs (Shikarpur & Nearby)</span>
+                <small style="font-size: 0.8rem; color: #6c757d;">Real-time Updates</small>
             </div>
 
-            <!-- Job 2 -->
-            <div class="job-card">
-                <div>
-                    <span class="job-badge badge-pvt">Private Job</span>
-                    <h3>Accountant & Computer Operator</h3>
-                    <p class="job-info"><strong>Company:</strong> Local Business / Shop</p>
-                    <p class="job-info"><strong>Location:</strong> Shahi Bazaar, Shikarpur</p>
-                    <p class="job-info"><strong>Education:</strong> Intermediate / B.Com</p>
-                    <p class="job-info"><strong>Last Date:</strong> 10 November 2026</p>
-                </div>
-                <a href="https://wa.me/923001234567?text=Mujhe Accountant Job ki details chahiye" class="apply-btn" target="_blank">WhatsApp Par Rabta Karein</a>
+            <!-- AUTOMATIC RSS FEED WIDGET -->
+            <div id="job-feed-container">
+                <p style="text-align: center; color: #777; padding: 20px;" id="loading-text">Nayi Jobs Load Ho Rahi Hain...</p>
             </div>
-
-            <!-- Job 3 -->
-            <div class="job-card">
-                <div>
-                    <span class="job-badge badge-gov">Government Job</span>
-                    <h3>Medical Staff / Staff Nurse</h3>
-                    <p class="job-info"><strong>Department:</strong> DHQ Hospital Shikarpur</p>
-                    <p class="job-info"><strong>Location:</strong> Shikarpur</p>
-                    <p class="job-info"><strong>Education:</strong> Nursing Diploma / B.Sc Nursing</p>
-                    <p class="job-info"><strong>Last Date:</strong> 20 November 2026</p>
-                </div>
-                <a href="https://wa.me/923001234567?text=Mujhe DHQ Hospital Job ki details chahiye" class="apply-btn" target="_blank">WhatsApp Par Rabta Karein</a>
-            </div>
-
         </div>
     </div>
 
     <footer>
-        &copy; 2026 Shikarpur Jobs Portal - All Rights Reserved
+        &copy; 2026 Shikarpur Jobs Portal - Auto Fetch System
     </footer>
 
-    <!-- Search Script -->
+    <!-- RSS Feed Integration Script -->
     <script>
-        function searchJobs() {
-            let input = document.getElementById('searchInput').value.toLowerCase();
-            let cards = document.getElementsByClassName('job-card');
+        // RSS Feed Fetcher Script for Automatic Job Updates
+        const rssFeedUrl = 'https://news.google.com/rss/search?q=Shikarpur+Jobs+Sindh&hl=en-PK&gl=PK&ceid=PK:en';
 
-            for (let i = 0; i < cards.length; i++) {
-                let text = cards[i].innerText.toLowerCase();
-                if (text.includes(input)) {
-                    cards[i].style.display = "";
+        fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(rssFeedUrl)}`)
+            .then(response => response.json())
+            .then(data => {
+                const container = document.getElementById('job-feed-container');
+                container.innerHTML = '';
+
+                if (data.items && data.items.length > 0) {
+                    data.items.forEach(item => {
+                        const jobDiv = document.createElement('div');
+                        jobDiv.className = 'rss-job-item';
+
+                        const pubDate = new Date(item.pubDate).toLocaleDateString();
+
+                        jobDiv.innerHTML = `
+                            <h4>${item.title}</h4>
+                            <p><strong>Tareekh:</strong> ${pubDate}</p>
+                            <a href="${item.link}" target="_blank" class="apply-btn">Job Detail & Apply Karein →</a>
+                        `;
+                        container.appendChild(jobDiv);
+                    });
                 } else {
-                    cards[i].style.display = "none";
+                    container.innerHTML = '<p style="text-align: center; padding: 20px;">Filhal Shikarpur ki koi nayi job opening nahi mili. Thodi der baad dubara check karein.</p>';
                 }
-            }
-        }
+            })
+            .catch(error => {
+                document.getElementById('job-feed-container').innerHTML = '<p style="text-align: center; color: red; padding: 20px;">Jobs load karne me masla aaya. Page refresh karein.</p>';
+            });
     </script>
+
 </body>
 </html>

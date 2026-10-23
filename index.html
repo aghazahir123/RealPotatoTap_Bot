@@ -1,353 +1,234 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ur">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Potato - Ultimate Mini App</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shikarpur Jobs Portal - Rozgar Ki Maloomat</title>
     <style>
-        body { background-color: #0b0e14; color: #ffffff; font-family: system-ui, -apple-system, sans-serif; user-select: none; -webkit-user-select: none; overflow-x: hidden; }
-        .tap-btn { transition: transform 0.05s ease; cursor: pointer; }
-        .tap-btn:active { transform: scale(0.90); }
-        @keyframes floatUp { 0% { opacity: 1; transform: translateY(0) scale(1); } 100% { opacity: 0; transform: translateY(-80px) scale(1.2); } }
-        .floating-num { position: absolute; pointer-events: none; font-weight: 800; font-size: 1.8rem; color: #00ffa3; text-shadow: 0 0 10px rgba(0,255,163,0.5); animation: floatUp 0.5s ease-out forwards; z-index: 100; }
-        #drop-canvas { touch-action: none; }
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: #f4f6f9;
+            color: #333;
+        }
+
+        /* Header */
+        header {
+            background-color: #0d6efd;
+            color: white;
+            padding: 25px 15px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        header h1 {
+            font-size: 2rem;
+            margin-bottom: 5px;
+        }
+
+        header p {
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+
+        /* Container */
+        .container {
+            max-width: 1000px;
+            margin: 20px auto;
+            padding: 0 15px;
+        }
+
+        /* Search Bar */
+        .search-box {
+            margin-bottom: 25px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .search-box input {
+            flex: 1;
+            padding: 12px 15px;
+            font-size: 1rem;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            outline: none;
+        }
+
+        .search-box input:focus {
+            border-color: #0d6efd;
+        }
+
+        /* Job Card Grid */
+        .job-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        /* Job Card Styling */
+        .job-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            border-top: 4px solid #0d6efd;
+            transition: transform 0.2s, box-shadow 0.2s;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .job-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .job-card h3 {
+            color: #1a1a1a;
+            font-size: 1.25rem;
+            margin-bottom: 10px;
+        }
+
+        .job-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            border-radius: 20px;
+            margin-bottom: 12px;
+            width: fit-content;
+        }
+
+        .badge-gov {
+            background-color: #d1e7dd;
+            color: #0f5132;
+        }
+
+        .badge-pvt {
+            background-color: #fff3cd;
+            color: #664d03;
+        }
+
+        .job-info {
+            font-size: 0.9rem;
+            color: #555;
+            margin-bottom: 8px;
+        }
+
+        .job-info strong {
+            color: #222;
+        }
+
+        .apply-btn {
+            display: block;
+            text-align: center;
+            background-color: #25d366;
+            color: white;
+            text-decoration: none;
+            padding: 10px;
+            border-radius: 6px;
+            font-weight: bold;
+            margin-top: 15px;
+            transition: background 0.35s;
+        }
+
+        .apply-btn:hover {
+            background-color: #1ebc57;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 20px;
+            margin-top: 40px;
+            background: #222;
+            color: #aaa;
+            font-size: 0.9rem;
+        }
     </style>
 </head>
-<body class="flex flex-col h-screen max-w-md mx-auto relative border-x border-slate-800 pb-16">
+<body>
 
-    <!-- Header -->
-    <header class="p-3.5 flex items-center justify-between border-b border-slate-800 bg-[#0b0e14] sticky top-0 z-40">
-        <div class="flex items-center gap-2.5">
-            <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-emerald-500 to-green-300 p-[2px]">
-                <div class="w-full h-full bg-[#0b0e14] rounded-[14px] flex items-center justify-center">
-                    <span class="text-xl">🥔</span>
-                </div>
-            </div>
-            <div>
-                <h3 class="font-bold text-xs text-white" id="user-name">Potato User</h3>
-                <span class="text-[10px] text-[#00ffa3] font-semibold flex items-center gap-1">
-                    <i class="fa-solid fa-key"></i> Keys: <span id="user-keys">0</span>
-                </span>
-            </div>
-        </div>
-        
-        <!-- Strict Master Admin Button (Locked to 7208905905) -->
-        <div id="admin-btn-wrapper" style="display: none;">
-            <button onclick="toggleAdminPanel()" class="px-3 py-1.5 rounded-xl bg-[#00ffa3]/10 border border-[#00ffa3]/40 text-[#00ffa3] text-xs font-bold flex items-center gap-1">
-                <i class="fa-solid fa-shield-halved"></i> Master Admin
-            </button>
-        </div>
+    <header>
+        <h1>Shikarpur Jobs Portal</h1>
+        <p>Shikarpur Aur Sindh Ki Tamam Sarkari Aur Private Mulazmaten</p>
     </header>
 
-    <!-- Main Viewport -->
-    <main class="flex-1 overflow-y-auto p-4 relative" id="app-viewport">
-        
-        <div id="user-views" class="space-y-4">
-            
-            <!-- Tap Tab -->
-            <div id="tab-tap" class="tab-content flex flex-col items-center justify-between space-y-4">
-                <div class="text-center my-1">
-                    <span class="text-[10px] uppercase tracking-widest text-gray-400 font-bold">Total Potato Balance</span>
-                    <div class="flex items-center justify-center gap-2 mt-1">
-                        <span class="text-3xl">🥔</span>
-                        <h1 class="text-4xl font-extrabold text-white" id="balance-num">0</h1>
-                    </div>
-                </div>
-
-                <!-- Big Tap Potato -->
-                <div class="relative flex items-center justify-center w-full max-w-[210px] aspect-square my-2">
-                    <div id="potato-btn" class="tap-btn relative w-full h-full rounded-full bg-gradient-to-tr from-emerald-800 via-[#00ffa3]/30 to-[#00ffa3] p-2 shadow-2xl border-4 border-[#00ffa3]/30 flex items-center justify-center">
-                        <div class="w-full h-full rounded-full bg-[#161c24] flex flex-col items-center justify-center border border-slate-800 pointer-events-none">
-                            <span class="text-7xl filter drop-shadow-[0_0_15px_rgba(0,255,163,0.4)]">🥔</span>
-                            <span class="mt-1 text-[10px] font-extrabold text-[#00ffa3] uppercase tracking-wider">TAP POTATO</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Energy Bar -->
-                <div class="w-full">
-                    <div class="flex justify-between items-center mb-1 text-xs">
-                        <span class="font-bold text-[#00ffa3]">⚡ <span id="energy-num">1000 / 1000</span></span>
-                        <span class="text-gray-400">+<span id="per-tap-val">1</span> per tap</span>
-                    </div>
-                    <div class="w-full bg-slate-900 h-2.5 rounded-full overflow-hidden border border-slate-800">
-                        <div id="energy-bar" class="bg-[#00ffa3] h-full transition-all duration-150" style="width: 100%"></div>
-                    </div>
-                </div>
-
-                <!-- Upgrades -->
-                <div class="w-full space-y-2 pt-2">
-                    <h3 class="font-bold text-xs text-gray-400 uppercase tracking-wider">Mining Upgrades</h3>
-                    <div class="bg-[#161c24] p-3 rounded-xl border border-slate-800 flex justify-between items-center">
-                        <div>
-                            <h4 class="font-bold text-xs text-white">Multitap Booster</h4>
-                            <span class="text-[10px] text-[#00ffa3]">Cost: <span id="tap-upgrade-cost">1,000</span> Coins</span>
-                        </div>
-                        <button onclick="buyTapUpgrade()" class="px-3.5 py-1.5 bg-[#00ffa3] text-black font-extrabold text-xs rounded-xl">UPGRADE</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Drop Game Tab -->
-            <div id="tab-drop" class="tab-content hidden space-y-3 text-center">
-                <h2 class="text-xl font-bold text-white">🌿 Drop & Catch Minigame</h2>
-                <p class="text-xs text-red-400 font-bold">⚠️ Warning: Don't hit Bombs (💣) or lose score!</p>
-                <div class="relative w-full h-[360px] bg-[#161c24] rounded-2xl border border-slate-800 overflow-hidden flex flex-col items-center justify-center">
-                    <canvas id="drop-canvas" class="absolute inset-0 w-full h-full"></canvas>
-                    <div id="drop-start-overlay" class="relative z-10 text-center space-y-3 p-4">
-                        <span class="text-5xl">🥔💣🔑</span>
-                        <h3 class="font-bold text-sm">Catch Items & Earn Rewards</h3>
-                        <button onclick="startDropGame()" class="px-6 py-3 bg-[#00ffa3] text-black font-extrabold text-xs rounded-xl shadow-lg">START GAME (30s)</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Tasks Wall -->
-            <div id="tab-tasks" class="tab-content hidden space-y-3">
-                <h2 class="text-xl font-bold text-white text-center">Tasks Wall</h2>
-                <div class="bg-[#161c24] p-4 rounded-2xl border border-slate-800 flex items-center justify-between">
-                    <div>
-                        <h4 class="font-bold text-sm">Daily Reward</h4>
-                        <span class="text-xs text-[#00ffa3]">+10,000 Coins & +2 Keys</span>
-                    </div>
-                    <button id="daily-claim-btn" onclick="claimDailyReward()" class="px-4 py-2 bg-[#00ffa3] text-black font-extrabold text-xs rounded-xl">CLAIM</button>
-                </div>
-                <div class="space-y-2" id="user-tasks-list"></div>
-            </div>
-
-            <!-- Squad / Referral -->
-            <div id="tab-friends" class="tab-content hidden space-y-3">
-                <h2 class="text-xl font-bold text-white text-center">Invite Squad</h2>
-                <div class="bg-[#161c24] p-4 rounded-2xl border border-slate-800 space-y-2">
-                    <span class="text-xs text-gray-400 font-bold uppercase">Your Invite Link</span>
-                    <input type="text" readonly id="ref-url-box" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs font-mono text-gray-300">
-                    <button onclick="copyRefLink()" class="w-full py-2 bg-[#00ffa3] text-black font-extrabold text-xs rounded-xl">COPY LINK</button>
-                </div>
-            </div>
-
-            <!-- TON Wallet -->
-            <div id="tab-wallet" class="tab-content hidden space-y-3 text-center">
-                <h2 class="text-xl font-bold text-white">TON Wallet</h2>
-                <div class="bg-[#161c24] p-5 rounded-2xl border border-slate-800">
-                    <div id="ton-connect-btn-container" class="flex justify-center"></div>
-                </div>
-            </div>
+    <div class="container">
+        <!-- Search Box -->
+        <div class="search-box">
+            <input type="text" id="searchInput" onkeyup="searchJobs()" placeholder="Job Title Ya Department Search Karein...">
         </div>
 
-        <!-- Master Owner Admin View (ID: 7208905905) -->
-        <div id="admin-view" class="hidden space-y-3">
-            <h2 class="text-base font-bold text-[#00ffa3]">Owner Admin Panel</h2>
-            <div class="bg-[#161c24] p-4 rounded-2xl border border-slate-800 space-y-3">
-                <h3 class="font-bold text-xs text-white uppercase">Add Task</h3>
-                <input type="text" id="adm-task-title" placeholder="Task Title" class="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-xs text-white outline-none">
-                <input type="url" id="adm-task-url" placeholder="Task Link" class="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-xs text-white outline-none">
-                <input type="number" id="adm-task-reward" placeholder="Reward Coins" class="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-xs text-white outline-none">
-                <button onclick="adminAddTask()" class="w-full py-2.5 bg-[#00ffa3] text-black font-extrabold text-xs rounded-xl">PUBLISH TASK</button>
+        <!-- Job Cards Container -->
+        <div class="job-list" id="jobContainer">
+
+            <!-- Job 1 -->
+            <div class="job-card">
+                <div>
+                    <span class="job-badge badge-gov">Government Job</span>
+                    <h3>Primary School Teacher (PST)</h3>
+                    <p class="job-info"><strong>Department:</strong> School Education Sindh</p>
+                    <p class="job-info"><strong>Location:</strong> District Shikarpur</p>
+                    <p class="job-info"><strong>Education:</strong> Graduation / B.A / B.Sc</p>
+                    <p class="job-info"><strong>Last Date:</strong> 15 November 2026</p>
+                </div>
+                <a href="https://wa.me/923001234567?text=Mujhe PST Job Shikarpur ke bare me maloomat chahiye" class="apply-btn" target="_blank">WhatsApp Par Rabta Karein</a>
             </div>
 
-            <div class="bg-[#161c24] p-4 rounded-2xl border border-slate-800 space-y-3">
-                <h3 class="font-bold text-xs text-white uppercase">Active Tasks (<span id="adm-task-count">0</span>)</h3>
-                <div class="space-y-2" id="adm-tasks-list"></div>
+            <!-- Job 2 -->
+            <div class="job-card">
+                <div>
+                    <span class="job-badge badge-pvt">Private Job</span>
+                    <h3>Accountant & Computer Operator</h3>
+                    <p class="job-info"><strong>Company:</strong> Local Business / Shop</p>
+                    <p class="job-info"><strong>Location:</strong> Shahi Bazaar, Shikarpur</p>
+                    <p class="job-info"><strong>Education:</strong> Intermediate / B.Com</p>
+                    <p class="job-info"><strong>Last Date:</strong> 10 November 2026</p>
+                </div>
+                <a href="https://wa.me/923001234567?text=Mujhe Accountant Job ki details chahiye" class="apply-btn" target="_blank">WhatsApp Par Rabta Karein</a>
             </div>
+
+            <!-- Job 3 -->
+            <div class="job-card">
+                <div>
+                    <span class="job-badge badge-gov">Government Job</span>
+                    <h3>Medical Staff / Staff Nurse</h3>
+                    <p class="job-info"><strong>Department:</strong> DHQ Hospital Shikarpur</p>
+                    <p class="job-info"><strong>Location:</strong> Shikarpur</p>
+                    <p class="job-info"><strong>Education:</strong> Nursing Diploma / B.Sc Nursing</p>
+                    <p class="job-info"><strong>Last Date:</strong> 20 November 2026</p>
+                </div>
+                <a href="https://wa.me/923001234567?text=Mujhe DHQ Hospital Job ki details chahiye" class="apply-btn" target="_blank">WhatsApp Par Rabta Karein</a>
+            </div>
+
         </div>
+    </div>
 
-    </main>
+    <footer>
+        &copy; 2026 Shikarpur Jobs Portal - All Rights Reserved
+    </footer>
 
-    <!-- Bottom Navigation -->
-    <nav id="bottom-nav" class="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-[#0b0e14] border-t border-slate-800 p-2 grid grid-cols-5 gap-1 z-40">
-        <button onclick="switchTab('tap')" id="nav-tap" class="flex flex-col items-center justify-center py-1 rounded-xl text-[#00ffa3]"><i class="fa-solid fa-seedling"></i><span class="text-[10px] font-bold mt-1">Farm</span></button>
-        <button onclick="switchTab('drop')" id="nav-drop" class="flex flex-col items-center justify-center py-1 rounded-xl text-gray-400"><i class="fa-solid fa-gamepad"></i><span class="text-[10px] font-bold mt-1">Drop</span></button>
-        <button onclick="switchTab('tasks')" id="nav-tasks" class="flex flex-col items-center justify-center py-1 rounded-xl text-gray-400"><i class="fa-solid fa-list-check"></i><span class="text-[10px] font-bold mt-1">Tasks</span></button>
-        <button onclick="switchTab('friends')" id="nav-friends" class="flex flex-col items-center justify-center py-1 rounded-xl text-gray-400"><i class="fa-solid fa-users"></i><span class="text-[10px] font-bold mt-1">Squad</span></button>
-        <button onclick="switchTab('wallet')" id="nav-wallet" class="flex flex-col items-center justify-center py-1 rounded-xl text-gray-400"><i class="fa-solid fa-wallet"></i><span class="text-[10px] font-bold mt-1">Wallet</span></button>
-    </nav>
-
+    <!-- Search Script -->
     <script>
-        const MASTER_ID = "7208905905";
-        let tg = window.Telegram ? window.Telegram.WebApp : null;
-        if (tg) { tg.expand(); tg.ready(); }
+        function searchJobs() {
+            let input = document.getElementById('searchInput').value.toLowerCase();
+            let cards = document.getElementsByClassName('job-card');
 
-        let activeUserId = (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) ? String(tg.initDataUnsafe.user.id) : MASTER_ID;
-        let activeUserName = (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) ? tg.initDataUnsafe.user.first_name : 'Master Owner';
-
-        const STORAGE_KEY = 'potato_app_user_data_v10_' + activeUserId;
-
-        function loadSavedState() {
-            let saved = localStorage.getItem(STORAGE_KEY);
-            if (saved) { try { return JSON.parse(saved); } catch(e){} }
-            return {
-                userId: activeUserId,
-                userName: activeUserName,
-                coins: 0,
-                keys: 0,
-                energy: 1000,
-                maxEnergy: 1000,
-                perTap: 1,
-                tapUpgradeCost: 1000,
-                dailyClaimed: false,
-                lastEnergyTime: Date.now(),
-                tasks: [{ id: 't1', title: 'Join Telegram Channel', reward: 5000, url: 'https://t.me/telegram', done: false }]
-            };
-        }
-
-        let state = loadSavedState();
-
-        function saveState() {
-            state.lastEnergyTime = Date.now();
-            try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch(e){}
-        }
-
-        // Web Audio Synthesizer
-        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        function playSound(type) {
-            try {
-                if (!audioCtx) return;
-                if (audioCtx.state === 'suspended') audioCtx.resume();
-                let osc = audioCtx.createOscillator();
-                let gain = audioCtx.createGain();
-                osc.connect(gain);
-                gain.connect(audioCtx.destination);
-
-                if (type === 'tap') {
-                    osc.frequency.setValueAtTime(450, audioCtx.currentTime);
-                    osc.frequency.exponentialRampToValueAtTime(850, audioCtx.currentTime + 0.07);
-                    gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
-                    gain.gain.linearRampToValueAtTime(0.01, audioCtx.currentTime + 0.07);
-                    osc.start(); osc.stop(audioCtx.currentTime + 0.07);
-                } else if (type === 'bomb') {
-                    osc.type = 'sawtooth';
-                    osc.frequency.setValueAtTime(140, audioCtx.currentTime);
-                    osc.frequency.linearRampToValueAtTime(30, audioCtx.currentTime + 0.35);
-                    gain.gain.setValueAtTime(0.35, audioCtx.currentTime);
-                    gain.gain.linearRampToValueAtTime(0.01, audioCtx.currentTime + 0.35);
-                    osc.start(); osc.stop(audioCtx.currentTime + 0.35);
+            for (let i = 0; i < cards.length; i++) {
+                let text = cards[i].innerText.toLowerCase();
+                if (text.includes(input)) {
+                    cards[i].style.display = "";
+                } else {
+                    cards[i].style.display = "none";
                 }
-            } catch(e) {}
-        }
-
-        window.onload = function() {
-            if (activeUserId === MASTER_ID) {
-                document.getElementById('admin-btn-wrapper').style.display = 'block';
             }
-            document.getElementById('user-name').innerText = state.userName;
-            document.getElementById('ref-url-box').value = `https://t.me/RealPotatoTap_Bot?start=ref_${state.userId}`;
-
-            let now = Date.now();
-            let elapsedSec = Math.floor((now - (state.lastEnergyTime || now)) / 1000);
-            if (elapsedSec > 0 && state.energy < state.maxEnergy) {
-                state.energy = Math.min(state.maxEnergy, state.energy + (elapsedSec * 2));
-            }
-
-            if (state.dailyClaimed) {
-                let dBtn = document.getElementById('daily-claim-btn');
-                if (dBtn) { dBtn.innerText = 'CLAIMED'; dBtn.className = 'px-4 py-2 bg-slate-800 text-gray-500 font-extrabold text-xs rounded-xl'; }
-            }
-
-            updateUI();
-            setupTap();
-            startEnergy();
-            renderTasks();
-            renderAdminTasks();
-            initWallet();
-        };
-
-        function updateUI() {
-            document.getElementById('balance-num').innerText = Math.floor(state.coins).toLocaleString();
-            document.getElementById('user-keys').innerText = state.keys;
-            document.getElementById('energy-num').innerText = Math.floor(state.energy) + " / " + state.maxEnergy;
-            document.getElementById('energy-bar').style.width = ((state.energy / state.maxEnergy) * 100) + "%";
-            document.getElementById('per-tap-val').innerText = state.perTap;
-            document.getElementById('tap-upgrade-cost').innerText = state.tapUpgradeCost.toLocaleString();
-            saveState();
         }
-
-        function setupTap() {
-            const btn = document.getElementById('potato-btn');
-            
-            const handleTapAction = (clientX, clientY) => {
-                if (state.energy < state.perTap) return;
-
-                state.energy -= state.perTap;
-                state.coins += state.perTap;
-                playSound('tap');
-                updateUI();
-
-                let x = clientX || (window.innerWidth / 2);
-                let y = clientY || (window.innerHeight / 2);
-
-                let num = document.createElement('div');
-                num.className = 'floating-num';
-                num.innerText = '+' + state.perTap;
-                num.style.left = (x - 20) + 'px';
-                num.style.top = (y - 40) + 'px';
-                document.body.appendChild(num);
-                setTimeout(() => num.remove(), 500);
-            };
-
-            btn.addEventListener('click', (e) => {
-                handleTapAction(e.clientX, e.clientY);
-            });
-
-            btn.addEventListener('touchstart', (e) => {
-                e.preventDefault();
-                for (let i = 0; i < e.changedTouches.length; i++) {
-                    let t = e.changedTouches[i];
-                    handleTapAction(t.clientX, t.clientY);
-                }
-            }, { passive: false });
-        }
-
-        function buyTapUpgrade() {
-            if (state.coins < state.tapUpgradeCost) {
-                alert("Not enough coins!");
-                return;
-            }
-            state.coins -= state.tapUpgradeCost;
-            state.perTap += 1;
-            state.tapUpgradeCost = Math.floor(state.tapUpgradeCost * 2.2);
-            updateUI();
-            alert("Booster Upgrade Successful!");
-        }
-
-        function startEnergy() {
-            setInterval(() => {
-                if (state.energy < state.maxEnergy) {
-                    state.energy = Math.min(state.maxEnergy, state.energy + 2);
-                    updateUI();
-                }
-            }, 1000);
-        }
-
-        function switchTab(tab) {
-            document.querySelectorAll('.tab-content').forEach(p => p.classList.add('hidden'));
-            document.querySelectorAll('nav button').forEach(b => b.className = 'flex flex-col items-center justify-center py-1 rounded-xl text-gray-400');
-            document.getElementById(`tab-${tab}`).classList.remove('hidden');
-            document.getElementById(`nav-${tab}`).className = 'flex flex-col items-center justify-center py-1 rounded-xl text-[#00ffa3]';
-            if (tab === 'tasks') renderTasks();
-        }
-
-        function toggleAdminPanel() {
-            document.getElementById('user-views').classList.toggle('hidden');
-            document.getElementById('admin-view').classList.toggle('hidden');
-            renderAdminTasks();
-        }
-
-        function renderTasks() {
-            let box = document.getElementById('user-tasks-list');
-            box.innerHTML = '';
-            state.tasks.forEach(t => {
-                let div = document.createElement('div');
-                div.className = "bg-[#161c24] p-3 rounded-xl border border-slate-800 flex justify-between items-center";
-                div.innerHTML = `<div><h4 class="font-bold text-xs">${t.title}</h4><span class="text-xs text-[#00ffa3]">+${t.reward.toLocaleString()} Coins</span></div><button onclick="doTask('${t.id}')" class="px-3 py-1.5 ${t.done?'bg-slate-800 text-gray-500':'bg-[#00ffa3] text-black'} font-bold text-xs rounded-xl">${t.done?'DONE':'START'}</button>`;
-                box.appendChild(div);
-            });
-        }
-
-        function doTask(id) {
-            let t = state.tasks.find(x => x.id === id);
-            if (!t || t.done) return;
-       
+    </script>
+</body>
+</html>

@@ -3,195 +3,98 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shikarpur Auto Jobs Portal</title>
+    <title>Media Earn & Promote Portal</title>
     <style>
-        * {
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0;
-            padding: 0;
-        }
-
-        body {
-            background-color: #f0f2f5;
-            color: #333;
-        }
-
-        /* Header */
-        header {
-            background: linear-gradient(135deg, #0d6efd, #0a58ca);
-            color: white;
-            padding: 30px 15px;
-            text-align: center;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-        }
-
-        header h1 {
-            font-size: 2.2rem;
-            margin-bottom: 8px;
-        }
-
-        header p {
-            font-size: 1rem;
-            opacity: 0.9;
-        }
-
-        .live-tag {
-            background-color: #dc3545;
-            color: white;
-            padding: 4px 12px;
-            font-size: 0.8rem;
-            border-radius: 20px;
-            font-weight: bold;
-            display: inline-block;
-            margin-top: 10px;
-            animation: pulse 1.5s infinite;
-        }
-
-        @keyframes pulse {
-            0% { opacity: 1; }
-            50% { opacity: 0.5; }
-            100% { opacity: 1; }
-        }
-
-        /* Container */
-        .container {
-            max-width: 900px;
-            margin: 25px auto;
-            padding: 0 15px;
-        }
-
-        .feed-card {
-            background: white;
-            border-radius: 12px;
-            padding: 20px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-            margin-bottom: 20px;
-        }
-
-        .feed-title {
-            font-size: 1.3rem;
-            color: #0d6efd;
-            margin-bottom: 15px;
-            border-bottom: 2px solid #e9ecef;
-            padding-bottom: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        /* RSS Widget Container Styling */
-        #job-feed-container {
-            min-height: 300px;
-        }
-
-        .rss-job-item {
-            padding: 15px;
-            border-bottom: 1px solid #eee;
-            transition: background 0.2s;
-        }
-
-        .rss-job-item:hover {
-            background-color: #f8f9fa;
-        }
-
-        .rss-job-item h4 {
-            font-size: 1.1rem;
-            color: #212529;
-            margin-bottom: 5px;
-        }
-
-        .rss-job-item p {
-            font-size: 0.9rem;
-            color: #6c757d;
-            margin-bottom: 10px;
-        }
-
-        .apply-btn {
-            display: inline-block;
-            background-color: #198754;
-            color: white;
-            text-decoration: none;
-            padding: 6px 14px;
-            font-size: 0.85rem;
-            border-radius: 5px;
-            font-weight: bold;
-        }
-
-        .apply-btn:hover {
-            background-color: #146c43;
-        }
-
-        /* Footer */
-        footer {
-            text-align: center;
-            padding: 20px;
-            margin-top: 40px;
-            background: #111;
-            color: #aaa;
-            font-size: 0.85rem;
-        }
+        * { box-sizing: border-box; font-family: Arial, sans-serif; margin: 0; padding: 0; }
+        body { background: #f4f6f9; color: #333; padding: 20px; }
+        .container { max-width: 900px; margin: auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        h2 { color: #0d6efd; margin-bottom: 15px; border-bottom: 2px solid #eee; padding-bottom: 5px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; margin-bottom: 25px; }
+        .card { border: 1px solid #ddd; padding: 15px; border-radius: 8px; background: #fafafa; }
+        .btn { background: #28a745; color: white; border: none; padding: 10px 15px; border-radius: 5px; cursor: pointer; font-weight: bold; width: 100%; }
+        .btn-blue { background: #0d6efd; }
+        input, select { width: 100%; padding: 10px; margin: 8px 0; border: 1px solid #ccc; border-radius: 5px; }
+        .task-box { border-left: 4px solid #0d6efd; padding: 10px; margin-bottom: 10px; background: #f8f9fa; }
     </style>
 </head>
 <body>
 
-    <header>
-        <h1>Shikarpur Jobs Portal</h1>
-        <p>Shikarpur Aur Sindh Ki Tamam Nayi Job Openings Automated Feed</p>
-        <span class="live-tag">● AUTO UPDATE LIVE</span>
-    </header>
+<div class="container">
+    <h1>Earning & Social Promotion Portal</h1>
+    <p style="margin-bottom: 20px; color: #666;">Buy Plans | Watch & Earn | Promote Social Media</p>
 
-    <div class="container">
-        <div class="feed-card">
-            <div class="feed-title">
-                <span>Tazareen Jobs (Shikarpur & Nearby)</span>
-                <small style="font-size: 0.8rem; color: #6c757d;">Real-time Updates</small>
-            </div>
-
-            <!-- AUTOMATIC RSS FEED WIDGET -->
-            <div id="job-feed-container">
-                <p style="text-align: center; color: #777; padding: 20px;" id="loading-text">Nayi Jobs Load Ho Rahi Hain...</p>
-            </div>
+    <!-- SECTION 1: INVESTMENT PLANS (WORKERS) -->
+    <h2>1. Earning Plans (For Workers)</h2>
+    <div class="grid">
+        <div class="card">
+            <h3>Starter Plan</h3>
+            <p><strong>Price:</strong> Rs. 100</p>
+            <p><strong>Daily Return:</strong> 20% Profit</p>
+            <p><strong>Tasks:</strong> 5 Videos Watch/Like</p>
+            <button class="btn" onclick="buyPlan(100)">Buy Plan (Rs. 100)</button>
+        </div>
+        <div class="card">
+            <h3>Pro Plan</h3>
+            <p><strong>Price:</strong> Rs. 1,000</p>
+            <p><strong>Daily Return:</strong> 20% Profit</p>
+            <p><strong>Tasks:</strong> 15 Videos Watch/Like</p>
+            <button class="btn" onclick="buyPlan(1000)">Buy Plan (Rs. 1000)</button>
+        </div>
+        <div class="card">
+            <h3>VIP Plan</h3>
+            <p><strong>Price:</strong> Rs. 10,000</p>
+            <p><strong>Daily Return:</strong> 20% Profit</p>
+            <p><strong>Tasks:</strong> 50 Videos Watch/Like</p>
+            <button class="btn" onclick="buyPlan(10000)">Buy Plan (Rs. 10000)</button>
         </div>
     </div>
 
-    <footer>
-        &copy; 2026 Shikarpur Jobs Portal - Auto Fetch System
-    </footer>
+    <!-- SECTION 2: ADD PROMOTION ORDER (CLIENTS) -->
+    <h2>2. Promote Video (For Clients)</h2>
+    <div class="card" style="margin-bottom: 25px;">
+        <input type="text" id="videoLink" placeholder="YouTube / TikTok / Instagram Link Paste Karein">
+        <select id="serviceType">
+            <option value="views">Views Increase Karein</option>
+            <option value="likes">Likes Increase Karein</option>
+            <option value="comments">Comments Increase Karein</option>
+            <option value="followers">Followers Increase Karein</option>
+        </select>
+        <input type="number" id="orderAmount" placeholder="Payment Amount (Rs.)">
+        <button class="btn btn-blue" onclick="submitOrder()">Order Submit Karein</button>
+    </div>
 
-    <!-- RSS Feed Integration Script -->
-    <script>
-        // RSS Feed Fetcher Script for Automatic Job Updates
-        const rssFeedUrl = 'https://news.google.com/rss/search?q=Shikarpur+Jobs+Sindh&hl=en-PK&gl=PK&ceid=PK:en';
+    <!-- SECTION 3: DAILY TASKS AREA -->
+    <h2>3. Daily Tasks (Watch & Earn)</h2>
+    <div id="tasksList">
+        <div class="task-box">
+            <h4>TikTok Video Like & Watch Task</h4>
+            <p>Link: <a href="https://tiktok.com" target="_blank">Open TikTok Video</a></p>
+            <button class="btn" style="margin-top: 5px; width: auto;" onclick="completeTask(this)">Complete & Earn</button>
+        </div>
+    </div>
+</div>
 
-        fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(rssFeedUrl)}`)
-            .then(response => response.json())
-            .then(data => {
-                const container = document.getElementById('job-feed-container');
-                container.innerHTML = '';
+<script>
+    function buyPlan(amount) {
+        alert("Aapne Rs. " + amount + " ka plan select kiya hai. Apni Payment JazzCash/Easypaisa par send karke screenshot admin ko bhejein.");
+    }
 
-                if (data.items && data.items.length > 0) {
-                    data.items.forEach(item => {
-                        const jobDiv = document.createElement('div');
-                        jobDiv.className = 'rss-job-item';
+    function submitOrder() {
+        let link = document.getElementById('videoLink').value;
+        if(link === "") {
+            alert("Meharbani karke pehle video link daalein!");
+        } else {
+            alert("Aapka promotion order admin ko bhej diya gaya hai. Verification ke baad tasks live honge.");
+        }
+    }
 
-                        const pubDate = new Date(item.pubDate).toLocaleDateString();
-
-                        jobDiv.innerHTML = `
-                            <h4>${item.title}</h4>
-                            <p><strong>Tareekh:</strong> ${pubDate}</p>
-                            <a href="${item.link}" target="_blank" class="apply-btn">Job Detail & Apply Karein →</a>
-                        `;
-                        container.appendChild(jobDiv);
-                    });
-                } else {
-                    container.innerHTML = '<p style="text-align: center; padding: 20px;">Filhal Shikarpur ki koi nayi job opening nahi mili. Thodi der baad dubara check karein.</p>';
-                }
-            })
-            .catch(error => {
-                document.getElementById('job-feed-container').innerHTML = '<p style="text-align: center; color: red; padding: 20px;">Jobs load karne me masla aaya. Page refresh karein.</p>';
-            });
-    </script>
+    function completeTask(btn) {
+        btn.innerText = "Completed ✓";
+        btn.style.background = "#6c757d";
+        btn.disabled = true;
+        alert("Task Complete! Aapke wallet me reward add kar diya gaya hai.");
+    }
+</script>
 
 </body>
 </html>
